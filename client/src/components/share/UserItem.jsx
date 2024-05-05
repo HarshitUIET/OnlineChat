@@ -4,8 +4,9 @@ import React from 'react'
 import { memo } from 'react';
 import { Add as AddIcon } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
+import { Remove as RemoveIcon } from '@mui/icons-material';
 
-const UserItem = ({user,handler,handlerIsLoading}) => {
+const UserItem = ({user,handler,handlerIsLoading,isAdded = false}) => {
 
     const {name,_id,avatar} = user;
 
@@ -37,14 +38,16 @@ const UserItem = ({user,handler,handlerIsLoading}) => {
             <IconButton
              size="small"
              sx={{
-                bgcolor:"primary.main",
-                color:"white",
+                bgcolor: isAdded ? "error.main" :"primary.main",
+                color:"white", 
                 "&:hover":{
-                    bgcolor:"primary.dark"
+                    bgcolor: isAdded ? "error.dark" : "primary.dark"
                 }
              }}
             onClick={()=>handler(_id)} disabled={handlerIsLoading}>
-                <AddIcon/>
+                {
+                    isAdded ? <RemoveIcon/> : <AddIcon/>
+                }
             </IconButton>
         </Stack>
     </ListItem>

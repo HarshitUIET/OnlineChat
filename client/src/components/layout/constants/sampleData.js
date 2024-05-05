@@ -37,21 +37,7 @@ export const sampleUsers = [
         _id: "4",
         avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
     },
-    {
-        name: "shaurya Jain",
-        _id: "5",
-        avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
-    },
-    {
-        name: "Dhruv Goel",
-        _id: "6",
-        avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
-    },
-    {
-        name: "Himeksh",
-        _id: "7",
-        avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
-    },
+   
     
 ]
 
