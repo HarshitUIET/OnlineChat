@@ -6,8 +6,13 @@ import { Send as SendIcon ,AttachFile as AttachIcon} from '@mui/icons-material';
 import { InputBox } from '../components/style/stylecomponent';
 import {orange} from '../components/layout/constants/color';
 import FileMenu from '../components/Dialog/FileMenu';
+import { sampleMessage } from '../components/layout/constants/sampleData';
+import MessageComponent from '../components/share/MessageComponent';
 
-
+const user = {
+  _id:"jjj",
+  name:"Harshit",
+}
 
 const Chat = () => {
 
@@ -29,7 +34,11 @@ const Chat = () => {
         overflowY:"auto",
       }}
       >
-        {/* Chat Messages */  }
+        {
+          sampleMessage.map((i)=> (
+            <MessageComponent user={user} key={i._id} message={i}/>
+          ))
+        }
       </Stack>
      
       <form 

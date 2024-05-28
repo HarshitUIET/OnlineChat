@@ -1,3 +1,4 @@
+
 export const samplechats = [
     {
         avatar : ["https://www.w3schools.com/howto/img_avatar.png"],
@@ -58,3 +59,36 @@ export const sampleNotifiactions = [
     },
     
 ]
+
+
+export const sampleMessage = [
+    {
+        attachments: [
+            {
+                public_id: "asdasd",
+                url: "https://www.w3schools.com/howto/img_avatar.png",
+            },
+
+        ],
+        _id:"keyka",  
+        sender:{
+            name: "John Doe",
+            _id: "user._id",
+        },
+        chat:"chatId",
+        createdAt: "2024-05-05T11:00:00.000Z",
+
+    },
+    {
+       
+        content : " xyz2 ka mesaage h",
+        _id:"kakakan",  
+        sender:{
+            name: "John Doe2",
+            _id: "jjj",
+        },
+        chat:"chatId",
+        createdAt: "2024-05-05T14:00:00.000Z",
+
+    }
+];
