@@ -16,7 +16,7 @@ const ChatList = ({
     handleDeleteChat
 }) => {
   return (
-    <Stack width={w} direction={"column"} >
+    <Stack overflow={"auto"} height={"100%"} width={w} direction={"column"} >
        { 
        chats?.map((data,index)=>{
 

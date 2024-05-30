@@ -6,8 +6,9 @@ import { Add as AddIcon,Delete as DeleteIcon, KeyboardBackspace as KeyboardBacks
 import { useState } from 'react'
 import {Link} from '../components/style/stylecomponent'
 import AvatarCard from '../components/share/AvatarCard'
-import {samplechats} from '../components/layout/constants/sampleData'
+import {sampleUsers, samplechats} from '../components/layout/constants/sampleData'
 import { useSearchParams } from 'react-router-dom'
+import UserItem from '../components/share/UserItem'
 
 
 const ConfirmDeleteDialog = lazy(()=>import('../components/Dialog/ConfirmDeleteDialog') )
@@ -17,7 +18,7 @@ const AddMemberDialog = lazy(()=>import('../components/Dialog/AddMemberDialog') 
 
 const Group = () => {
 
-  const isAddMember = true;
+  const isAddMember = false;
 
   const navigate  = useNavigate();
 
@@ -67,9 +68,16 @@ const Group = () => {
     closeConfirmDeleteHandler();
   }
 
+  const removeMemberHandler = () => {
+    console.log("Remove Member");
+  }
+
   useEffect(()=>{
-    setGroupName(`Group Name ${chatId} `);
-    setGroupNameUpdatedValue(`Group Name${chatId}`)
+    
+    if(chatId) {
+      setGroupName(`Group Name ${chatId} `);
+      setGroupNameUpdatedValue(`Group Name${chatId}`)
+    }
 
     return () => {
       setGroupName('');
@@ -216,11 +224,22 @@ const Group = () => {
             md:"1rem 4rem"
           }}
           spacing={"2rem"}
-          bgcolor={"bisque"}
           height={"50vh"}
           overflow={"auto"}
           >
-            Members
+           {
+            sampleUsers.map((i)=>{
+            return <UserItem key={i._id} user={i} 
+              isAdded 
+              styling={{
+                boxShadow:"0 0 0.5rem rgba(0,0,0,0.2)",
+                padding:"1rem 2rem",
+                borderRadius:"0.5rem",
+              }}
+              handler={removeMemberHandler}
+             />
+            })
+           }
           </Stack>
 
           {ButtonGroup}
@@ -262,7 +281,13 @@ const Group = () => {
 }
 
 const GroupList = ({w='100%',myGroups=[],chatId}) => (
-  <Stack width={w}>
+  <Stack 
+   sx={{
+      bgcolor:"bisque",
+      height:"100vh",
+      overflow:"auto",
+   }}
+  width={w}>
     {
       myGroups.length>0 ? (
         myGroups.map((group)=>{

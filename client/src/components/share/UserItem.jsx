@@ -6,7 +6,7 @@ import { Add as AddIcon } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import { Remove as RemoveIcon } from '@mui/icons-material';
 
-const UserItem = ({user,handler,handlerIsLoading,isAdded = false}) => {
+const UserItem = ({user,handler,handlerIsLoading,isAdded = false,styling={}}) => {
 
     const {name,_id,avatar} = user;
 
@@ -17,6 +17,7 @@ const UserItem = ({user,handler,handlerIsLoading,isAdded = false}) => {
         alignItems={"center"}
         spacing={"1rem"}
         width={"100%"}
+        {...styling}
         >
             <Avatar/>
             <Typography

@@ -40,9 +40,7 @@ const Login = () => {
     console.log(avatar);
 
     return (
-        <div style={{
-            //  backgroundImage:"linear-gradient(rgb(255 255 209) ,rgb(249 159 159))"
-        }}>
+        <div>
             <Container component={'main'} maxWidth={"xs"}
             sx={{
                 height: '100vh',

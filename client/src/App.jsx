@@ -4,11 +4,15 @@ import { Suspense, lazy } from 'react'
 import { ProtectRoute } from './components/auth/protectedroute';
 import { LayoutLoader } from './components/layout/Loaders';
 
+
+
 const Home = lazy(()=>import('./pages/Home'));
 const Login = lazy(()=>import('./pages/Login'));
 const Group = lazy(()=>import('./pages/Group'));
 const Chat = lazy(()=>import('./pages/Chat'));
 const Notfound = lazy(()=>import('./pages/Notfound'));
+const AdminLogin = lazy(()=>import('./pages/Admin/AdminLogin'));
+const Dashboard = lazy(()=>import('./pages/Admin/Dashboard'));
 
 function App() {
   
@@ -27,6 +31,10 @@ function App() {
           <Route path='/login' element={<ProtectRoute user={!user} redirect='/'>
             <Login/>
           </ProtectRoute>} />
+
+          <Route path='/admin' element={<AdminLogin/>} />
+
+          <Route path='/admin/dashboard' element={<Dashboard/>} />
 
           <Route path='*' element={<Notfound/>} />
        </Routes>
