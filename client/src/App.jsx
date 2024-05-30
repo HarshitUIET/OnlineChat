@@ -13,6 +13,9 @@ const Chat = lazy(()=>import('./pages/Chat'));
 const Notfound = lazy(()=>import('./pages/Notfound'));
 const AdminLogin = lazy(()=>import('./pages/Admin/AdminLogin'));
 const Dashboard = lazy(()=>import('./pages/Admin/Dashboard'));
+const UserManagement = lazy(()=>import('./pages/Admin/UserManagement'));
+const MessageManagement = lazy(()=>import('./pages/Admin/MessageManagement'));
+const ChatManagement = lazy(()=>import('./pages/Admin/ChatManagement'));
 
 function App() {
   
@@ -33,6 +36,9 @@ function App() {
           </ProtectRoute>} />
 
           <Route path='/admin' element={<AdminLogin/>} />
+          <Route path='/admin/users' element={<UserManagement/>} />
+          <Route path='/admin/messages' element={<MessageManagement/>} />
+          <Route path='/admin/chats' element={<ChatManagement/>} />
 
           <Route path='/admin/dashboard' element={<Dashboard/>} />
 

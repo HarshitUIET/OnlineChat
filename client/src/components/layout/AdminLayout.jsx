@@ -2,11 +2,13 @@ import { Box, Drawer, Grid, IconButton, Stack, Tab, Typography } from '@mui/mate
 import React from 'react'
 import { grayColor, matBlack } from './constants/color'
 import {Menu as MenuIcon, Close as CloseIcon, Dashboard as DashboardIcon , ManageAccounts as ManageAccountsIcon ,
-    Groups as GroupsIcon, Message as MessageIcon} 
+    Groups as GroupsIcon, Message as MessageIcon
+,Logout as LogoutIcon} 
 from '@mui/icons-material'
 import { useState } from 'react'
 import { useLocation , Link as LinkComponent } from 'react-router-dom'
 import {styled } from '@mui/system';
+import { Navigate } from 'react-router-dom';
 
 const Link = styled(LinkComponent) `
   text-decoration : none;
@@ -27,24 +29,27 @@ const adminTabs = [
 },
 {
     name:"Users",
-    path:"/admin/user-management",
+    path:"/admin/users",
     icon:<ManageAccountsIcon/>
 },{
-    name:"Groups",
-    path:"/admin/group-management",
+    name:"Chats",
+    path:"/admin/chats",
     icon:<GroupsIcon/>
 },
 {
     name:"Messages",
-    path:"/admin/message-management",
+    path:"/admin/messages",
     icon:<MessageIcon/>
-}
-
+},
 ]
 
 const Sidebar = ({w ="100%"}) => {
 
      const location = useLocation();
+
+     const logoutHandler = () => {
+            console.log("Logout Handler");
+     }
 
     return <Stack width={w} direction={"column"} spacing={"3rem"} p={"3rem"} >
         <Typography variant={"h5"} textTransform= {"uppercase"} >chattu</Typography>
@@ -72,11 +77,26 @@ const Sidebar = ({w ="100%"}) => {
                     </Link>
                 ))
             }
+              <Link onClick={logoutHandler} >
+                      <Stack direction={"row"} alignItems={"center"} spacing={"1rem"} >
+                        {
+                            <LogoutIcon/>
+                        }
+                        <Typography>Logout</Typography>
+                        </Stack>  
+                    </Link>
         </Stack>
     </Stack>
 }
 
+const isAdmin = true;
+
 const AdminLayout = ({children}) => {
+
+
+    if(!isAdmin) {
+        return <Navigate to = '/admin' />
+    }
 
     const [isMobile,setIsMobile] = useState(false);
 
