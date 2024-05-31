@@ -183,3 +183,123 @@ export const sampleMessage = [
 
     }
 ];
+
+export const dashboardData = {
+    users : [
+        {
+            name : "John Doe",
+            _id: "1",
+            avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+            username : "john_doe",
+            friends : 20,
+            groups : 5
+        },
+        {
+            name : "Harshit Pachauri",
+            _id: "2",
+            avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+            username : "harshit_pachauri",
+            friends : 20,
+            groups : 5
+        },
+        {
+            name : "Gautam Jain",
+            _id: "3",
+            avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+            username : "gautam_jain",
+            friends : 20,
+            groups : 5
+        },
+        {
+            name : "Rahul Jain",
+            _id: "4",
+            avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+            username : "rahul_jain",
+            friends : 20,
+            groups : 5
+        }
+    ],
+    chats : [{
+        name : "bakchodi Group",
+        _id: "1",
+        avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+        groupChat: true,
+        members : [{
+            _id : "1",
+            avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+        },
+        {
+            _id : "2",
+            avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+        }],
+        totalMembers : 20,
+        totalMessages : 100,
+        creator : {
+            name : "John Doe",
+            avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+        }
+    },
+    {
+        name : "Lauda laisan group",
+        _id: "2",
+        avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+        groupChat: false,
+        members : [{
+            _id : "1",
+            avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+        },
+        {
+            _id : "2",
+            avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+        }],
+        totalMembers : 20,
+        totalMessages : 100,
+        creator : {
+            name : "John Doe",
+            avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+        }
+    },
+    {
+        name : "bakchodi Group",
+        _id: "3",
+        avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+        groupChat: true,
+        members : [{
+            _id : "1",
+            avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+        },
+        {
+            _id : "2",
+            avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+        }],
+        totalMembers : 20,
+        totalMessages : 100,
+        creator : {
+            name : "John Doe",
+            avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+        }
+    },
+    {
+        name : "bakchodi Group",
+        _id: "4",
+        avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+        groupChat: true,
+        members : [{
+            _id : "1",
+            avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+        },
+        {
+            _id : "2",
+            avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+        }
+    ],
+        totalMembers : 20,
+        totalMessages : 100,
+        creator : {
+            name : "John Doe",
+            avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
+        }
+    }
+
+]
+}
