@@ -1,10 +1,11 @@
 import React from 'react'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { Box, Container, Paper, Typography } from '@mui/material'
-import { AdminPanelSettings as AdminPanelSettingsIcon,Group,Notifications as NotificationsIcon, Group as GroupIcon , Person as PersonIcon } from '@mui/icons-material'
+import { AdminPanelSettings as AdminPanelSettingsIcon,Group,Notifications as NotificationsIcon, Group as GroupIcon , Person as PersonIcon , Message as MessageIcon } from '@mui/icons-material'
 import { Stack } from '@mui/material'
 import { SearchField,CurveButton } from '../../components/style/stylecomponent'
 import moment from 'moment'
+import { DoughnutChart, LineChart } from '../../components/specific/Charts'
 
 
 const Appbar = (
@@ -45,14 +46,33 @@ const Dashboard = () => {
         xs:"column",
         sm:"row"
     }}
-    ></Stack>
+    spacing="2rem"
+    justifyContent="space-between"
+    alignItems={"center"}
+    margin={"2rem 0"}
+    >
+        <Widget title={"Users"} value={34} Icon={<PersonIcon/>} />
+        <Widget title={"Chats"} value={3}  Icon={<GroupIcon/>} />
+        <Widget title={"Messages"} value={450} Icon={<MessageIcon/>} />
+    </Stack>
 
   return (
     <AdminLayout>
         <Container component={"main"} >
             {Appbar}
 
-            <Stack direction={"row"} spacing={"2rem"} flexWrap={"wrap"} >
+            <Stack direction={"row"}  flexWrap={"wrap"}
+            justifyContent={"center"}
+            alignItems={{
+                xs:"center",
+                lg:"stretch"
+            }}
+
+            sx={{
+                gap:"2rem"
+            }}
+
+            >
                <Paper
                 elevation={3}
                 sx={{
@@ -60,11 +80,11 @@ const Dashboard = () => {
                     borderRadius:"1rem",
                     width : "100%",
                     maxWidth:"45rem",
-                    height:"25rem",
+                   
                 }}
                >
                 <Typography variant={"h4"} margin={"2rem 0"} >Last Messages</Typography>
-                 {"chat"}
+                 <LineChart value={[23,42,13,19,11]} />
                </Paper>
                
               <Paper
@@ -81,12 +101,13 @@ const Dashboard = () => {
                 },
                 position:"relative",
                 width:"100%",
-                maxWidth:"25rem",
-                height:"25rem"
-
+                maxWidth:"25rem"
               }}
               >
-                {"Dougnut chart"}
+                <DoughnutChart 
+                 labels={["Single Chats","Group Chats"]}
+                  value={[23,66]}
+                />
 
                 <Stack
               position={"absolute"}
@@ -115,6 +136,43 @@ const Dashboard = () => {
   )
 }
 
+
+const Widget = ({title,value,Icon}) =>
+ <Paper
+  sx={{
+    padding:"2rem",
+    margin: "2rem 0",
+    borderRadius:"1rem",
+    width:"20rem"
+  }}
+ 
+ >
+       <Stack alignItems={"center"} spacing={"1rem"}  >
+        <Typography
+          sx={{
+            color: "rgba(0,0,0,0.7)",
+            borderRadius: "50%",
+            border : `5px solid rgba(0,0,0,0.9)`,
+            width: "5rem",
+            height : "5rem",
+            display:"flex",
+            justifyContent:"center",
+            alignItems:"center",
+          }}
+        
+        
+        >
+            {value}
+        
+        </Typography>
+        <Stack 
+         direction={"row"} alignItems={"center"}  spacing={"1rem"}
+        >
+            {Icon}
+            <Typography>{title}</Typography>
+        </Stack>
+       </Stack>
+</Paper>
 
 
 export default Dashboard
