@@ -300,6 +300,35 @@ export const dashboardData = {
             avatar: ["https://www.w3schools.com/howto/img_avatar.png"],
         }
     }
-
-]
+],
+ messages : [
+    {
+        attachments: [
+            {
+                public_id: "asdasd",
+                url: "https://www.w3schools.com/howto/img_avatar.png",
+            },
+        ],
+        content: "kaha ka msg h",
+        _id:"keyka",  
+        sender:{
+            avatar: "https://www.w3schools.com/howto/img_avatar.png",
+            _id: "user._id",
+        },
+        chat:"chatId",
+        createdAt: "2024-05-05T11:00:00.000Z",
+    
+    },
+    {
+         attachments: []  ,
+        content : " xyz2 ka mesaage h",
+        _id:"kakakan",  
+        sender:{
+            avatar: "https://www.w3schools.com/howto/img_avatar.png",
+            _id: "jjj",
+        },
+        chat:"chatId",
+        createdAt: "2024-05-05T14:00:00.000Z",
+    }
+ ]
 }

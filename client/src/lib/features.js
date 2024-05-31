@@ -40,4 +40,5 @@ const getlast7days = () => {
      return last7days;
 }
 
+
 export {getlast7days,fileformat,transformImage};
