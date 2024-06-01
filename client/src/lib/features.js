@@ -4,7 +4,6 @@ const fileformat = (url='') => {
 
     const fileExtention = url.split('.').pop();
 
-    console.log(fileExtention);
 
     if(fileExtention == 'mp3' ||fileExtention == 'wav') return 'audio';
 

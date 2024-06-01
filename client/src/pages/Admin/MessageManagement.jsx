@@ -23,17 +23,16 @@ const columns = [
         width : 200,
         renderCell : (params) => {
             
-            console.log(params.row);
+            
             const {attachments} = params.row;   
-            console.log(attachments);
-
+           
             return attachments?.length > 0 ? 
             attachments.map((i)=>{
                 const url = i.url;
-                console.log("url is ",url);
+                
                 const file = fileformat(url);
-                console.log("file is ",file);
-                return <Box>
+                
+                return <Box key={i.public_id}>
                 <a href={url} target='_blank' download style={{
                     color:"black",
                   }}>
@@ -55,12 +54,12 @@ const columns = [
         headerName : "Sent By",
         headerClassName : "table-header",
         width : 200,
-        renderCell : (params) => (
-         <Stack direction={"row"} spacing={"1rem"} alignItems={"center"} >
+        renderCell : (params) => {
+        return  <Stack direction={"row"} spacing={"1rem"} alignItems={"center"} >
          <Avatar alt={params.row.sender.name} src={params.row.sender.avatar} />
          <span> {params.row.sender.name}</span>
          </Stack>
-    )
+        }
 },
     {
         field : "chat",

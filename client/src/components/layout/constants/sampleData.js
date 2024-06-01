@@ -311,9 +311,10 @@ export const dashboardData = {
         ],
         content: "kaha ka msg h",
         _id:"keyka",  
+        groupChat : true,
         sender:{
-            avatar: "https://www.w3schools.com/howto/img_avatar.png",
-            _id: "user._id",
+           name: "Harshit",
+           avatar: "https://www.w3schools.com/howto/img_avatar.png",
         },
         chat:"chatId",
         createdAt: "2024-05-05T11:00:00.000Z",
@@ -323,11 +324,12 @@ export const dashboardData = {
          attachments: []  ,
         content : " xyz2 ka mesaage h",
         _id:"kakakan",  
+        groupChat : true,
         sender:{
-            avatar: "https://www.w3schools.com/howto/img_avatar.png",
-            _id: "jjj",
+            name : "John Doe",
+             avatar: "https://www.w3schools.com/howto/img_avatar.png",
         },
-        chat:"chatId",
+        chat:"chatId1",
         createdAt: "2024-05-05T14:00:00.000Z",
     }
  ]
