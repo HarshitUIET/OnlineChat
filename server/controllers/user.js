@@ -1,4 +1,5 @@
 import {User} from '../models/user.js';
+import {sendToken} from '../utilis/features.js'
 
 const avatar = {
   public_id : "ssede",
@@ -7,14 +8,24 @@ const avatar = {
 
 const newUser = async (req,res) => {
 
-    await User.create({
-      name : "Harshit",
-      username : "Harsh@king",
-      Bio : "I am a full stack developer",
-      password : "harsh123@io",
-      avatar
-    })
-    res.status(201).json({message : "User created successfully"});
+  const {name,username,Bio,password} = req.body;
+
+  console.log(name);
+  
+  const avatar = {
+    public_id : "ssede",
+    url : 'assssa'
+  }
+
+   const user = await User.create({
+    name,
+    username,
+    Bio,
+    password,
+    avatar
+  });
+    
+   sendToken(res,user,201,"User created successfully");
 }
 
 

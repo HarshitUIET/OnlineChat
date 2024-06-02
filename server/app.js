@@ -13,6 +13,9 @@ const PORT = process.env.PORT || 3000;
 
 dbConnect(MONGO_URL);
 
+app.use(express.json());
+
+
 
 app.use('/user',userRoute);
 
