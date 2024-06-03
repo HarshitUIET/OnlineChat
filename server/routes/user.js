@@ -4,7 +4,7 @@ import { singleAvatar} from "../middlewares/multer.js";
 
 const app = express.Router();
 
-app.get('/login',login)
+app.post('/login',login)
 app.post('/new',singleAvatar,newUser)
 
 
