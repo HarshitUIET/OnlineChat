@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 
 import userRoute from "./routes/user.js";
 import { dbConnect } from "./utilis/features.js";
+import { errorMidddleware } from "./middlewares/error.js";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
@@ -14,10 +16,14 @@ const PORT = process.env.PORT || 3000;
 dbConnect(MONGO_URL);
 
 app.use(express.json());
+app.use(cookieParser());
 
 
 
 app.use('/user',userRoute);
+
+
+app.use(errorMidddleware);
 
 app.get("/",(req,res)=>{
   res.send("Home Page");
