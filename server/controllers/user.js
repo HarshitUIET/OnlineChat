@@ -3,6 +3,7 @@ import {User} from '../models/user.js';
 import {sendToken} from '../utilis/features.js'
 import { TryCatch } from '../middlewares/error.js';
 import { ErrorHandler } from '../utilis/utility.js';
+import { cookieOptions } from '../utilis/features.js';
 
 const avatar = {
   public_id : "ssede",
@@ -66,4 +67,17 @@ const getMyProfile = TryCatch(async (req,res,next) => {
 
 });
 
-export {login,newUser,getMyProfile};
+const logout = TryCatch(async (req,res,next) => {
+
+    return res.status(200).cookie("chattu-token"," ",{
+      ...cookieOptions,
+       maxAge : 0
+    }).json({
+      success : true,
+      message : "Logged Out Successfully"
+    
+    });
+
+});
+
+export {login,newUser,getMyProfile,logout};

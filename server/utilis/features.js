@@ -34,4 +34,4 @@ const sendToken = (res,user,code,message) => {
 
 
 
-export {dbConnect,sendToken};
+export {dbConnect,sendToken,cookieOptions};
