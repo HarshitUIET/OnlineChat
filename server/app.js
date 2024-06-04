@@ -1,10 +1,12 @@
 import express from "express";
 import dotenv from "dotenv";
-
-import userRoute from "./routes/user.js";
 import { dbConnect } from "./utilis/features.js";
 import { errorMidddleware } from "./middlewares/error.js";
 import cookieParser from "cookie-parser";
+
+
+import userRoute from "./routes/user.js";
+import chatRoute from "./routes/chat.js";
 
 const app = express();
 
@@ -21,6 +23,7 @@ app.use(cookieParser());
 
 
 app.use('/user',userRoute);
+app.use('/chat',chatRoute);
 
 
 app.use(errorMidddleware);
