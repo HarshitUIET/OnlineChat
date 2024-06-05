@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 
 import userRoute from "./routes/user.js";
 import chatRoute from "./routes/chat.js";
+import { createUser } from "./seeders/user.js";
 
 const app = express();
 
@@ -16,6 +17,7 @@ const MONGO_URL = process.env.MONGO_URL;
 const PORT = process.env.PORT || 3000;
 
 dbConnect(MONGO_URL);
+
 
 app.use(express.json());
 app.use(cookieParser());
