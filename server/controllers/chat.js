@@ -155,6 +155,62 @@ const addMembers = TryCatch(async (req, res, next) => {
   });
 });
 
+const removeMembers = TryCatch(async (req, res, next) => {
+    const { chatId, userId } = req.body;
+
+    if (!Types.ObjectId.isValid(chatId)) {
+        return next(new ErrorHandler("Invalid chat ID", 400));
+    }
+
+    if (!Types.ObjectId.isValid(userId)) {
+        return next(new ErrorHandler("Invalid user ID", 400));
+    }
+
+    const [chat, userThatWillBeRemoved] = await Promise.all([
+        Chat.findById(chatId),
+        User.findById(userId, 'name')
+    ]);
+
+    if (!chat) {
+        return next(new ErrorHandler("Chat not found", 404));
+    }
+
+    if (!userThatWillBeRemoved) {
+        return next(new ErrorHandler("User not found", 404));
+    }
+
+    if (!chat.groupChat) {
+        return next(new ErrorHandler("This is not a group chat", 400));
+    }
+
+    if (chat.creator.toString() !== req.user.toString()) {
+        return next(new ErrorHandler("You are not allowed to remove members", 401));
+    }
+
+    if (chat.members.length <= 3) {
+        return next(new ErrorHandler("Group must have at least 3 members", 400));
+    }
+
+    console.log(userId.toString(), chat.members);
+
+    const initialMemberCount = chat.members.length;
+    chat.members = chat.members.filter(member => member.toString() !== userId.toString());
+
+    if (chat.members.length === initialMemberCount) {
+        return next(new ErrorHandler("User is not a member of this group", 400));
+    }
+
+    await chat.save();
+
+    emitEvent(req, ALERT, chat.members, `${userThatWillBeRemoved.name} has been removed from ${chat.name} group`);
+    emitEvent(req, REFETCH_CHATS, chat.members);
+
+    return res.status(200).json({
+        success: true,
+        message: "Member removed successfully"
+    });
+});
 
 
-export { newGroupChat, getMyChat,getMyGroups,addMembers}
+
+export { newGroupChat, getMyChat,getMyGroups,addMembers,removeMembers}
