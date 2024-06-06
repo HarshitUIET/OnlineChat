@@ -3,6 +3,9 @@ import { TryCatch } from "../middlewares/error.js"
 import { Chat } from "../models/chat.js";
 import { ErrorHandler } from "../utilis/utility.js";
 import { emitEvent } from "../utilis/features.js";
+import { getOtherMember } from '../lib/helper.js';
+import { User } from '../models/user.js';
+import { Types } from 'mongoose';
 
 
 const newGroupChat = TryCatch(async (req,res,next) => {
@@ -34,4 +37,124 @@ const newGroupChat = TryCatch(async (req,res,next) => {
 
 })
 
-export { newGroupChat }
+
+const getMyChat = TryCatch(async (req,res,next)=> {
+
+    
+    const chats = await Chat.find({members : req.user})
+    .populate('members','name avatar');
+
+
+
+    const transformChats = chats.map(({_id,name,members,groupChat}) => {
+
+        const otherMember = getOtherMember(members,req.user);
+
+        return {
+            _id,
+            name : groupChat ? name : otherMember.name,
+            groupChat,
+            avatar : groupChat ? members.slice(0,3).map(({avatar}) => avatar.url) : [otherMember.avatar.url],
+            members : members.reduce((acc,member) => {
+                if(member._id.toString() !== req.user.toString()) {
+                    acc.push(member._id);
+                }
+                return acc;
+            },[])
+        }
+    })
+
+    res.status(200).json({
+        success : true,
+        chats: transformChats
+    })
+
+})
+
+const getMyGroups = TryCatch(async (req,res,next) => {
+
+    const chats = await Chat.find({
+        groupChat : true,
+        members : req.user,
+        creator : req.user
+    }).populate('members','name avatar');
+
+    const groups = chats.map(({_id,groupChat,name,members}) => {
+        return {
+            _id,
+            name,
+            groupChat,
+            avatar : members.slice(0,3).map(({avatar}) => avatar.url),
+        }
+    })
+
+    res.status(200).json({
+        success : true,
+        groups
+    });
+
+})
+
+
+
+const addMembers = TryCatch(async (req, res, next) => {
+  const { chatId, members } = req.body;
+
+  if (!Types.ObjectId.isValid(chatId)) {
+    return next(new ErrorHandler("Invalid chat ID", 400));
+  }
+
+  if (!members || members.length === 0) {
+    return next(new ErrorHandler("Please select members to add", 400));
+  }
+
+  const chat = await Chat.findById(chatId);
+
+  if (!chat) {
+    return next(new ErrorHandler("Chat not found", 404));
+  }
+
+  if (!chat.groupChat) {
+    return next(new ErrorHandler("This is not a group chat", 400));
+  }
+
+  if (chat.creator.toString() !== req.user.toString()) {
+    return next(new ErrorHandler("You are not allowed to add members", 401));
+  }
+
+  const allNewMemberPromise = members.map((id) => User.findById(id).select('name'));
+  const allNewMembers = await Promise.all(allNewMemberPromise);
+
+  const alreadyMembers = [];
+  const newMembers = [];
+
+  allNewMembers.forEach((member) => {
+    if (chat.members.includes(member._id.toString())) {
+      alreadyMembers.push(member.name);
+    } else {
+      chat.members.push(member._id);
+      newMembers.push(member.name);
+    }
+  });
+
+  if (newMembers.length > 0) {
+    await chat.save();
+
+    const allUsersName = newMembers.join(",");
+    emitEvent(req, ALERT, chat.members, `${allUsersName} has been added to ${chat.name} group`);
+    emitEvent(req, REFETCH_CHATS, chat.members);
+  }
+
+  const message = `${newMembers.length > 0 ? `Members added to ${chat.name} group successfully.` : ''} ${
+    alreadyMembers.length > 0 ? `The following members are already in the group: ${alreadyMembers.join(", ")}.` : ''
+  }`.trim();
+
+  return res.status(200).json({
+    success: true,
+    message,
+  });
+});
+
+
+
+export { newGroupChat, getMyChat,getMyGroups,addMembers}
