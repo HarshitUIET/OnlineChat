@@ -2,7 +2,7 @@ import { ALERT, NEW_ATTACHMENT, NEW_MESSAGE_ALERT, REFETCH_CHATS } from '../cons
 import { TryCatch } from "../middlewares/error.js"
 import { Chat } from "../models/chat.js";
 import { ErrorHandler } from "../utilis/utility.js";
-import { emitEvent } from "../utilis/features.js";
+import { deleteFilesFromCloudinary, emitEvent } from "../utilis/features.js";
 import { getOtherMember } from '../lib/helper.js';
 import { User } from '../models/user.js';
 import { Types } from 'mongoose';
@@ -385,5 +385,48 @@ const renameGroup = TryCatch(async (req,res,next) => {
 })
 
 
+const deleteChat = TryCatch(async (req,res,next) => {
+     
 
-export { newGroupChat, getMyChat,getMyGroups,addMembers,removeMembers,leaveGroup,sendAttachments,getChatDetails,renameGroup}
+    const chatId = req.params.id;
+
+    const chat = await Chat.findById(chatId);
+
+    if(!chat) return next(new ErrorHandler("Chat not found",404));
+
+    if(chat.groupChat && chat.creator.toString() !== req.user.toString()) return next(new ErrorHandler("You are not allowed to delete the chat",401));
+
+    if(!chat.groupChat && !chat.members.includes(req.user.toString())) return next(new ErrorHandler("You are not allowed to delete the chat",401));
+
+    const messageWithAttachments = await Message.find({
+        chat : chatId,
+        attachments : { $exists : true , $ne : []}
+    })
+
+    const public_ids = [];
+
+    messageWithAttachments.forEach(({attachments}) => 
+        attachments.forEach(({public_id}) => 
+            public_ids.push(public_id)
+        )
+    )
+
+    await Promise.all([
+        deleteFilesFromCloudinary(public_ids),  
+        Chat.deleteOne(),
+        Message.deleteMany({chat : chatId}),
+    ]);
+
+       emitEvent(req,REFETCH_CHATS,chat.members);
+
+         return res.status(200).json({
+              success : true,
+              message : "Chat deleted successfully"
+
+    })
+
+})
+
+
+
+export { newGroupChat, getMyChat,getMyGroups,addMembers,removeMembers,leaveGroup,sendAttachments,getChatDetails,renameGroup,deleteChat}
