@@ -1,4 +1,4 @@
-import { ALERT, REFETCH_CHATS } from '../constants/event.js'
+import { ALERT, NEW_ATTACHMENT, NEW_MESSAGE_ALERT, REFETCH_CHATS } from '../constants/event.js'
 import { TryCatch } from "../middlewares/error.js"
 import { Chat } from "../models/chat.js";
 import { ErrorHandler } from "../utilis/utility.js";
@@ -6,6 +6,7 @@ import { emitEvent } from "../utilis/features.js";
 import { getOtherMember } from '../lib/helper.js';
 import { User } from '../models/user.js';
 import { Types } from 'mongoose';
+import { Message } from '../models/message.js';
 
 
 const newGroupChat = TryCatch(async (req,res,next) => {
@@ -232,6 +233,10 @@ const leaveGroup = TryCatch( async (req,res,next) => {
 
     const remainingMembers = chat.members.filter(member => member.toString() !== req.user.toString());
 
+    if(remainingMembers.length < 3) {
+        return next(new ErrorHandler("Group must have at least 3 members",400));
+    }
+
     if(chat.creator.toString() === req.user.toString()) {
 
         const randomElement = Math.floor(Math.random()*remainingMembers.length);
@@ -257,6 +262,128 @@ const leaveGroup = TryCatch( async (req,res,next) => {
 
 })
 
+const sendAttachments = TryCatch(async (req,res,next)=>{
+
+    const {chatId} = req.body;
+
+    if(!Types.ObjectId.isValid(chatId)) {
+        return next(new ErrorHandler("Invalid chat ID",400));
+    }
+
+    const [chats,me] = await Promise.all([
+        Chat.findById(chatId),
+        User.findById(req.user).select('name')
+    ]);
+
+    if(!chats) {
+        return next(new ErrorHandler("Chat not found",404));
+    }
+
+    const files = req.files || [];
+
+    // uploading handle here
+    const attachments = [];
+
+    if(files.length === 0) {
+        return next(new ErrorHandler("Please Provide attachment",400));
+    }
+
+    const messageforRealTime = {
+        content : '',
+        attachments,
+        sender : me._id,
+        chat : chatId
+    }
+
+    const messageForDB = {
+        ...messageforRealTime,
+        sender : {
+            _id : me._id,
+            name : me.name
+        }
+    }
+
+    const message = await Message.create(messageForDB);
+
+    emitEvent(req,NEW_ATTACHMENT,chats.members,{
+        message : messageforRealTime,
+        chatId
+    });
+
+    emitEvent(req,NEW_MESSAGE_ALERT,chats.members,{chatId});
+
+    return res.status(200).json({
+        success : true,
+        message 
+    })
+
+});
 
 
-export { newGroupChat, getMyChat,getMyGroups,addMembers,removeMembers,leaveGroup}
+const getChatDetails = TryCatch( async (req,res,next) => {
+    
+      if(req.query.populate === "true") {
+
+         const chat = await Chat.findById(req.params.id)
+            .populate('members','name avatar').lean();
+
+            if(!chat) return next(new ErrorHandler("Chat not found",404));
+
+            chat.members = chat.members.map(({_id,name,avatar}) => ({
+                _id,
+                name,
+                avatar : avatar.url
+            }));
+
+            return res.status(200).json({
+                success : true,
+                chat
+            })
+
+      }
+      else {
+        
+        const chat = await Chat.findById(req.params.id);
+
+        if(!chat) return next(new ErrorHandler("Chat not found",404));
+
+        return res.status(200).json({
+            success : true,
+            chat
+        })
+      
+
+      }
+ 
+})
+
+
+const renameGroup = TryCatch(async (req,res,next) => {
+
+    const chatId = req.params.id;
+    const {name} = req.body;
+
+    const chat = await Chat.findById(chatId);
+
+    if(!chat) return next(new ErrorHandler("Chat not found",404));
+
+    if(!chat.groupChat) return next(new ErrorHandler("This is not a group chat",400));
+
+    if(chat.creator.toString() !== req.user.toString()) return next(new ErrorHandler("You are not allowed to rename the group",401));
+
+    chat.name = name;
+
+    await chat.save();
+
+    emitEvent(req,REFETCH_CHATS,chat.members);
+
+    return res.status(200).json({
+        success : true,
+        message : "Group renamed successfully"
+    })
+
+})
+
+
+
+export { newGroupChat, getMyChat,getMyGroups,addMembers,removeMembers,leaveGroup,sendAttachments,getChatDetails,renameGroup}

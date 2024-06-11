@@ -1,4 +1,5 @@
-import mongoose,{ Schema,Types } from "mongoose";
+import mongoose,{ Schema,model,Types } from "mongoose";
+
 
 const schema = new Schema({
     content: {
@@ -22,7 +23,7 @@ const schema = new Schema({
         required : true
     },
     chat : {
-        tupe : Types.ObjectId,
+        type : Types.ObjectId,
         ref : 'Chat',
         required : true
     }
