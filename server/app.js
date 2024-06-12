@@ -1,13 +1,13 @@
-import express from "express";
-import dotenv from "dotenv";
-import { dbConnect } from "./utilis/features.js";
-import { errorMidddleware } from "./middlewares/error.js";
 import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
+import express from "express";
+import { errorMidddleware } from "./middlewares/error.js";
+import { dbConnect } from "./utilis/features.js";
 
 
-import userRoute from "./routes/user.js";
 import chatRoute from "./routes/chat.js";
-import { createUser } from "./seeders/user.js";
+import userRoute from "./routes/user.js";
+import { createMessagesInAChat } from "./seeders/chat.js";
 
 const app = express();
 
@@ -17,6 +17,10 @@ const MONGO_URL = process.env.MONGO_URL;
 const PORT = process.env.PORT || 3000;
 
 dbConnect(MONGO_URL);
+
+// createSingleChats(10);
+// createGroupChats(10);
+// createMessagesInAChat("666992a227825416c6ef7a72",50)
 
 
 app.use(express.json());
