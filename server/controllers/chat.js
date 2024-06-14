@@ -105,10 +105,7 @@ const addMembers = TryCatch(async (req, res, next) => {
     return next(new ErrorHandler("Invalid chat ID", 400));
   }
 
-  if (!members || members.length === 0) {
-    return next(new ErrorHandler("Please select members to add", 400));
-  }
-
+  
   const chat = await Chat.findById(chatId);
 
   if (!chat) {

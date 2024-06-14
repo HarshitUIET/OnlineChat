@@ -1,12 +1,6 @@
-import {body,validationResult} from 'express-validator';
+import {body,validationResult,check, param} from 'express-validator';
 import { ErrorHandler } from '../utilis/utility.js';
 
-const registerValidator = () => [
-    body('name',"Please Enter Name").notEmpty(),
-    body('username','Please Enter Username').notEmpty(),
-    body('password','Please Enter Password').notEmpty(),
-    body('bio','Please Enter Bio').notEmpty()
-];
 
 const validateHandler = (req,res,next) => {
     
@@ -20,5 +14,71 @@ const validateHandler = (req,res,next) => {
 
 }
 
+const registerValidator = () => [
+    body('name',"Please Enter Name").notEmpty(),
+    body('username','Please Enter Username').notEmpty(),
+    body('password','Please Enter Password').notEmpty(),
+    body('bio','Please Enter Bio').notEmpty(),
+    check('avatar','Please Upload Avatar').notEmpty()
+];
 
-export { registerValidator,validateHandler}
+const loginValidator = () => [
+    body('username','Please Enter Username').notEmpty(),
+    body('password','Please Enter Password').notEmpty()
+];
+
+
+const newGroupChatValidator = () => [
+    body('name','Please Enter Group Name').notEmpty(),
+    body('members').notEmpty().withMessage('Please Add Members').isArray({min:2,max:100}).withMessage('Members should be between 2 and 100')
+];
+
+const addMemberValidator = () => [
+    body('chatId','Please Enter ChatId').notEmpty(),
+    body('members').notEmpty().withMessage('Please Add Members').isArray({min:1,max:97}).withMessage('Members should be between 1 and 97')
+]
+
+const removeMemberValidator = () => [
+    body('chatId','Please Enter ChatId').notEmpty(),
+    body('userId','Please Enter UserId').notEmpty()
+]
+
+const leaveGroupValidator = () => [
+   param('id','Please Enter ChatId').notEmpty()
+]
+
+const sendAttachmentValidator = () => [
+    body('chatId','Please Enter ChatId').notEmpty(),
+    check('files').notEmpty().withMessage('Please Upload Atachment').isArray({min:1,max:5}).withMessage('Attachments must be 1-5')
+]
+
+const getMessageVslidator = () => [
+    param('id','Please Enter ChatId').notEmpty(),
+]
+
+const getChatDetailsValidator = () => [
+    param('id','Please Enter ChatId').notEmpty()
+]
+
+const renameGroupValidator = () => [    
+    body('name','Please Enter Group Name').notEmpty(),
+    param('id','Please Enter ChatId').notEmpty()
+]
+
+
+const deleteChatValidator = () => [ 
+    param('id','Please Enter ChatId').notEmpty()
+]
+
+const sendFriendRequestValidator = () => [
+    body('userId','Please Enter UserId').notEmpty()
+]
+
+const acceptRequestValidator = () => [
+   body('requestId','Please Enter ReceiverId').notEmpty(),
+   body('accept').notEmpty().withMessage('Please Enter Accept').isBoolean().withMessage('Accept should be boolean')
+]
+
+export { registerValidator,validateHandler,loginValidator,newGroupChatValidator,addMemberValidator,removeMemberValidator,leaveGroupValidator,sendAttachmentValidator,getMessageVslidator,getChatDetailsValidator,renameGroupValidator
+,deleteChatValidator,sendFriendRequestValidator,acceptRequestValidator
+}
