@@ -7,6 +7,8 @@ import { dbConnect } from "./utilis/features.js";
 
 import chatRoute from "./routes/chat.js";
 import userRoute from "./routes/user.js";
+import adminRoute from './routes/admin.js'
+
 import { createMessagesInAChat } from "./seeders/chat.js";
 
 const app = express();
@@ -30,6 +32,7 @@ app.use(cookieParser());
 
 app.use('/user',userRoute);
 app.use('/chat',chatRoute);
+app.use('/admin',adminRoute)
 
 
 app.use(errorMidddleware);
