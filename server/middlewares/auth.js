@@ -19,4 +19,22 @@ const isAuthenticated =  (req, res, next) => {
 
 }
 
-export {isAuthenticated}
+const adminAuthenticated =  (req, res, next) => {
+
+  const token =  req.cookies["chattu-admin-token"];
+
+if(!token) return next(new ErrorHandler(" Only Admin can access this route"));
+
+const secretKey = jwt.verify(token,process.env.JWT_SECRET);
+
+const isMatched = secretKey === process.env.ADMIN_SECRET_KEY;
+
+if(!isMatched) return next(new ErrorHandler("Only Admin can access this route",401));
+
+
+// console.log(token);
+next();
+
+}
+
+export {isAuthenticated,adminAuthenticated}
