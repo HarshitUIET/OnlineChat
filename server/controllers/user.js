@@ -14,27 +14,31 @@ const avatar = {
   url : 'assssa'
 }
 
-const newUser = async (req,res) => {
+const newUser = TryCatch( async (req,res) => {
 
-  const {name,username,Bio,password} = req.body;
-
-  console.log(name);
+    const {name,username,Bio,password} = req.body;
   
-  const avatar = {
-    public_id : "ssede",
-    url : 'assssa'
-  }
-
-   const user = await User.create({
-    name,
-    username,
-    Bio,
-    password,
-    avatar
-  });
+    const file = req.body;
+  
+    if(!file) return next(new ErrorHandler("Please Upload Avatar",400));
+  
+    console.log(name);
     
-   sendToken(res,user,201,"User created successfully");
-}
+    const avatar = {
+      public_id : "ssede",
+      url : 'assssa'
+    }
+  
+     const user = await User.create({
+      name,
+      username,
+      Bio,
+      password,
+      avatar
+    });
+      
+     sendToken(res,user,201,"User created successfully");
+})
 
 
 const login = TryCatch(async (req,res,next) => {

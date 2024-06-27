@@ -263,6 +263,16 @@ const sendAttachments = TryCatch(async (req,res,next)=>{
 
     const {chatId} = req.body;
 
+    const files = req.files || [];
+
+    if(files.length<1) {
+        return next(new ErrorHandler("Please provide attachment",400));
+    }
+
+    if(files.length > 5) {
+        return next(new ErrorHandler("You can upload at most 5 files",400));
+    }
+
     if(!Types.ObjectId.isValid(chatId)) {
         return next(new ErrorHandler("Invalid chat ID",400));
     }
@@ -275,8 +285,6 @@ const sendAttachments = TryCatch(async (req,res,next)=>{
     if(!chats) {
         return next(new ErrorHandler("Chat not found",404));
     }
-
-    const files = req.files || [];
 
     // uploading handle here
     const attachments = [];

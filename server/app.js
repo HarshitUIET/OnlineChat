@@ -17,6 +17,7 @@ dotenv.config();
 
 const MONGO_URL = process.env.MONGO_URL;
 const PORT = process.env.PORT || 3000;
+const envMode = process.env.NODE_ENV.trim() || "PRODUCTION";
 
 dbConnect(MONGO_URL);
 
@@ -42,5 +43,9 @@ app.get("/",(req,res)=>{
 })
 
 app.listen(PORT,()=>{
-    console.log(`listening to port no ${PORT} `);
+    console.log(`listening to port no ${PORT} in ${envMode} mode`);
 })
+
+export {
+  envMode
+}
