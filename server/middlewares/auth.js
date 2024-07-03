@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 
 const isAuthenticated =  (req, res, next) => {
 
-      const token =  req.cookies["chattu-token"];
+     const token =  req.cookies["chattu-token"];
 
     if(!token) return next(new ErrorHandler(" Please Login to access this route"));
 

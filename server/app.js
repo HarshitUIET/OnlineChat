@@ -6,7 +6,7 @@ import { dbConnect } from "./utilis/features.js";
 import { Server } from "socket.io";
 import {createServer} from "http";
 import {v4 as uuid} from "uuid";
-
+import cors from "cors";
 
 import chatRoute from "./routes/chat.js";
 import userRoute from "./routes/user.js";
@@ -39,12 +39,16 @@ dbConnect(MONGO_URL);
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors({
+  origin : "http://localhost:5173",
+  credentials : true
+}));
 
 
 
-app.use('/user',userRoute);
-app.use('/chat',chatRoute);
-app.use('/admin',adminRoute)
+app.use('/api/v1/user',userRoute);
+app.use('/api/v1/chat',chatRoute);
+app.use('/api/v1/admin',adminRoute)
 
 
 app.use(errorMidddleware);
