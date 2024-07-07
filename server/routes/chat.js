@@ -7,9 +7,6 @@ import { newGroupChatValidator, validateHandler,addMemberValidator,removeMemberV
 
 const app = express.Router();
 
-
-
-
 app.use(isAuthenticated);
 
 app.get('/new',newGroupChatValidator(),validateHandler, newGroupChat);

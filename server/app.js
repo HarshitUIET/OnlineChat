@@ -7,6 +7,7 @@ import { Server } from "socket.io";
 import {createServer} from "http";
 import {v4 as uuid} from "uuid";
 import cors from "cors";
+import {v2 as Cloudinary} from "cloudinary";
 
 import chatRoute from "./routes/chat.js";
 import userRoute from "./routes/user.js";
@@ -31,6 +32,11 @@ const envMode = process.env.NODE_ENV.trim() || "PRODUCTION";
 const userSocketIDs = new Map();
 
 dbConnect(MONGO_URL);
+Cloudinary.config({
+  cloud_name : process.env.CLOUDINARY_CLOUD_NAME,
+  api_key : process.env.CLOUDINARY_API_KEY,
+  api_secret : process.env.CLOUDINARY_API_SECRET
+})
 
 // createSingleChats(10);
 // createGroupChats(10);

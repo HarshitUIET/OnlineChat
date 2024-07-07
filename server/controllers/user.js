@@ -1,6 +1,6 @@
 import { compare } from 'bcrypt';
 import {User} from '../models/user.js';
-import {emitEvent, sendToken} from '../utilis/features.js'
+import {emitEvent, sendToken, uploadFileToCloudinary} from '../utilis/features.js'
 import { TryCatch } from '../middlewares/error.js';
 import { ErrorHandler } from '../utilis/utility.js';
 import { cookieOptions } from '../utilis/features.js';
@@ -9,24 +9,32 @@ import { NEW_REQUEST, REFETCH_CHATS } from '../constants/event.js';
 import {Request} from '../models/request.js';
 import {getOtherMember} from '../lib/helper.js';
 
+
 const avatar = {
   public_id : "ssede",
   url : 'assssa'
 }
 
-const newUser = TryCatch( async (req,res) => {
+const newUser = TryCatch( async (req,res,next) => {
+
+   console.log("In this sec")
 
     const {name,username,Bio,password} = req.body;
   
-    const file = req.body;
+    const file = req.file;
+
+    console.log("File",file); 
   
     if(!file) return next(new ErrorHandler("Please Upload Avatar",400));
+
   
-    console.log(name);
+    const result = await uploadFileToCloudinary([file]);
+
+    console.log("Result",result);
     
     const avatar = {
-      public_id : "ssede",
-      url : 'assssa'
+      public_id : result[0].public_id,
+      url : result[0].url
     }
   
      const user = await User.create({

@@ -3,7 +3,7 @@ import { ErrorHandler } from '../utilis/utility.js';
 
 
 const validateHandler = (req,res,next) => {
-    
+
     const errors = validationResult(req);
     
     const errorMessages = errors.array().map((e)=>e.msg).join(",");

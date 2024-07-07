@@ -8,7 +8,7 @@ import {server} from './components/layout/constants/config';
 
 import axios from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
-import { userNotExists } from './redux/reducers/auth';
+import { userExists, userNotExists } from './redux/reducers/auth';
 
 import { Toaster } from 'react-hot-toast';
 
@@ -33,9 +33,9 @@ function App() {
   const {user} = useSelector(state => state.auth);
 
   useEffect(()=>{
-    axios.get(`${server}/api/v1/user/me`)
-    .then((res)=>{
-      console.log(res);
+    axios.get(`${server}/api/v1/user/me`,{withCredentials:true})
+    .then(({data})=>{
+      dispatch(userExists(data.user))
     })
     .catch((err)=>{
       dispatch(userNotExists())
