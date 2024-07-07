@@ -18,6 +18,8 @@ const Applayout = () => (WrappedComponent) => {
 
       const dispatch = useDispatch();
 
+      const {user} = useSelector((state) => state.auth);
+
       const chatId = params.chatId;
 
       const { isMobile } = useSelector((state) => state.misc);
@@ -83,7 +85,7 @@ const Applayout = () => (WrappedComponent) => {
                      bgcolor: "rgba(0,0,0,0.85)",
                   }}
                >
-                  <Profile />
+                  <Profile user={user} />
                </Grid>
             </Grid>
          </div>

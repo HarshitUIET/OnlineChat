@@ -10,7 +10,7 @@ import axios from 'axios'
 import { server } from '../layout/constants/config';
 import { useDispatch, useSelector } from 'react-redux'
 import { userNotExists } from '../../redux/reducers/auth'
-import { setIsMobile, setIsSearch } from '../../redux/reducers/misc'
+import { setIsMobile, setIsNotification, setIsSearch } from '../../redux/reducers/misc'
 
 
 const SearchDialog = lazy(() => import('../specific/Search'));
@@ -25,8 +25,7 @@ const Header = () => {
 
   const navigate = useNavigate();
 
-  const {isSearch} = useSelector(state => state.misc);
-  const [isNotification, setIsNotification] = useState(false);
+  const {isSearch,isNotification} = useSelector(state => state.misc);
   const [isNewGroup, setIsNewGroup] = useState(false);
  
 
@@ -48,7 +47,7 @@ const Header = () => {
     };
     
     const openNotifications = () => {
-      setIsNotification((prev)=>!prev);
+      dispatch(setIsNotification(true));
     }
 
     const LogoutHandler = async () => {
