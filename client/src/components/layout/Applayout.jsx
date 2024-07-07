@@ -10,6 +10,7 @@ import { useMyChatsQuery } from '../../redux/api/api'
 import { useDispatch, useSelector } from 'react-redux'
 import { setIsMobile } from '../../redux/reducers/misc'
 import {useErrors} from '../../hooks/hook'
+import { getSocket } from '../../socket'
 
 const Applayout = () => (WrappedComponent) => {
    return (props) => {
@@ -17,6 +18,9 @@ const Applayout = () => (WrappedComponent) => {
       const params = useParams();
 
       const dispatch = useDispatch();
+
+      const socket = getSocket();
+      console.log(socket);
 
       const {user} = useSelector((state) => state.auth);
 

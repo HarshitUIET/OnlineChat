@@ -18,12 +18,11 @@ import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "./constants/event.js";
 import { create } from "domain";
 import { getSockets } from "./lib/helper.js";
 import { Message } from "./models/message.js";
-
-const app = express();
-const server = createServer(app);
-const io = new Server(server,{});
+import { socketAuthenticator } from "./middlewares/auth.js";
 
 dotenv.config();
+
+const app = express();
 
 const MONGO_URL = process.env.MONGO_URL;
 const PORT = process.env.PORT || 3000;
@@ -46,7 +45,12 @@ Cloudinary.config({
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin : "http://localhost:5173",
+  origin : [
+    "http://localhost:5173",
+    "http://localhost:4173",
+     process.env.CLIENT_URL
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
   credentials : true
 }));
 
@@ -63,7 +67,28 @@ app.get("/",(req,res)=>{
   res.send("Home Page");
 })
 
-io.use((socket,next)=>{})
+
+const server = createServer(app);
+
+
+const io = new Server(server,{
+  cors : {
+    origin : [
+      "http://localhost:5173",
+      "http://localhost:4173",
+       process.env.CLIENT_URL
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials : true
+  }
+});
+
+app.set("io", io);
+
+io.use((socket,next) => {
+  cookieParser()(socket.request,socket.request.res, async (err) =>
+  await socketAuthenticator(err,socket,next));
+})
 
 io.on("connection",(socket) => {
 
