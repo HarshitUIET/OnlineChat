@@ -1,6 +1,6 @@
-import React, { Fragment, useRef } from 'react'
+import React, { Fragment, useCallback, useRef } from 'react'
 import Applayout from '../components/layout/Applayout'
-import { Icon, IconButton, Stack } from '@mui/material';
+import { Icon, IconButton, Skeleton, Stack } from '@mui/material';
 import { grayColor } from '../components/layout/constants/color';
 import { Send as SendIcon ,AttachFile as AttachIcon} from '@mui/icons-material';
 import { InputBox } from '../components/style/stylecomponent';
@@ -8,19 +8,93 @@ import {orange} from '../components/layout/constants/color';
 import FileMenu from '../components/Dialog/FileMenu';
 import { sampleMessage } from '../components/layout/constants/sampleData';
 import MessageComponent from '../components/share/MessageComponent';
+import { useState } from 'react';
+import { getSocket } from '../socket';
+import { NEW_MESSAGE } from '../components/layout/constants/event';
+import { useChatDetailsQuery, useGetMessagesQuery } from '../redux/api/api';
+import { useErrors, useSocketEvents } from '../hooks/hook';
+import { useDispatch, useSelector } from 'react-redux';
+import {useInfiniteScrollTop} from '6pp'
+import { setIsFileMenu } from '../redux/reducers/misc';
 
-const user = {
-  _id:"jjj",
-  name:"Harshit",
-}
 
-const Chat = () => {
+const Chat = ({chatId}) => {
+
+  const user  = useSelector((state)=> state.auth.user);
+
 
   const containerRef = useRef(null);
 
-  
+  const dispatch = useDispatch();
 
-  return (
+  const socket = getSocket();
+
+  const [message,setMessage] = useState("");
+
+  const [messages,setMessages] = useState([]);
+
+  const [page,setPage] = useState(1);
+
+  const [anchor,setAnchor] = useState(null);
+
+  console.log("Messages",messages);
+  
+  const chatDetails = useChatDetailsQuery({chatId,skip:!chatId});
+
+  const oldMessagesChunk = useGetMessagesQuery({chatId,page});
+
+  const {data:oldMessages,setData:setOldMessage} = useInfiniteScrollTop(
+    containerRef,
+    oldMessagesChunk.data?.totalPages,
+    page,
+    setPage,
+    oldMessagesChunk.data?.messages
+  );
+
+  const errors = [
+    {isError:chatDetails.isError,error:chatDetails.error},
+    {isError:oldMessagesChunk.isError,error:oldMessagesChunk.error}
+  ];
+
+  useErrors(errors);
+
+  const members = chatDetails?.data?.chat?.members;
+
+  const allMessages = [...oldMessages,...messages];
+
+  const handleFileOpen = (e) => {
+     dispatch(setIsFileMenu(true));
+     setAnchor(e.currentTarget);
+  }
+
+  const submitHandler = (e) => {
+
+    e.preventDefault();
+
+   if(!message.trim()) return;
+
+
+    socket.emit(NEW_MESSAGE,{
+      chatId,
+      members,
+      message
+    })
+
+    setMessage("");
+
+  }
+
+
+  const newMessageHandler = useCallback((data)=> {
+    console.log("DATA",data);
+    setMessages((prev)=>[...prev,data.message]);
+  },[]);
+
+  const eventArr = {[NEW_MESSAGE] : newMessageHandler};
+
+  useSocketEvents(socket,eventArr)
+
+  return chatDetails.isLoading ? <Skeleton/> : (
      <Fragment>
       <Stack 
       ref = {containerRef}
@@ -35,7 +109,7 @@ const Chat = () => {
       }}
       >
         {
-          sampleMessage.map((i)=> (
+          allMessages.map((i)=> (
             <MessageComponent user={user} key={i._id} message={i}/>
           ))
         }
@@ -45,6 +119,7 @@ const Chat = () => {
       style={{
         height:"10%",
       }}
+      onSubmit={submitHandler}
       >
         <Stack
         direction={"row"}
@@ -60,13 +135,15 @@ const Chat = () => {
             position:"absolute",
             left:"1.5rem"
           }}
-
+          onClick={handleFileOpen}
 
           >
             <AttachIcon/>
           </IconButton>
 
-          <InputBox placeholder='Type Message Here...'/>
+          <InputBox placeholder='Type Message Here...'
+           value={message} onChange={(e)=> setMessage(e.target.value)}
+          />
 
           <IconButton
           type='submit'
@@ -86,7 +163,7 @@ const Chat = () => {
         </Stack>
       </form>
 
-      <FileMenu  />
+      <FileMenu anchorE1={anchor} chatId={chatId} />
 
      </Fragment>
   )

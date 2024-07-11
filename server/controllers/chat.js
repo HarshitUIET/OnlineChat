@@ -2,7 +2,7 @@ import { ALERT, NEW_ATTACHMENT, NEW_MESSAGE_ALERT, REFETCH_CHATS } from '../cons
 import { TryCatch } from "../middlewares/error.js"
 import { Chat } from "../models/chat.js";
 import { ErrorHandler } from "../utilis/utility.js";
-import { deleteFilesFromCloudinary, emitEvent } from "../utilis/features.js";
+import { deleteFilesFromCloudinary, emitEvent, uploadFileToCloudinary } from "../utilis/features.js";
 import { getOtherMember } from '../lib/helper.js';
 import { User } from '../models/user.js';
 import { Types } from 'mongoose';
@@ -287,7 +287,7 @@ const sendAttachments = TryCatch(async (req,res,next)=>{
     }
 
     // uploading handle here
-    const attachments = [];
+    const attachments = await uploadFileToCloudinary(files);
 
     if(files.length === 0) {
         return next(new ErrorHandler("Please Provide attachment",400));

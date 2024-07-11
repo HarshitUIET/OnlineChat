@@ -44,12 +44,7 @@ const socketAuthenticator = async (err,socket,next) => {
 
     if(err) return next(err);
 
-    console.log("jij");
-
-
     const authToken = socket.request.cookies["chattu-token"];
-
-    console.log(authToken);
 
     if(!authToken) return next(new ErrorHandler("Please Login to access this route",401));
 
@@ -57,13 +52,9 @@ const socketAuthenticator = async (err,socket,next) => {
 
     const user = await User.findById(decodedData.id);  
 
-    console.log(user);
-
     if(!user) return next(new ErrorHandler("Please Login to access this route",401));
 
     socket.user = user;
-
-    
 
     return next();
 

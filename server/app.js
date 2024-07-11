@@ -92,10 +92,9 @@ io.use((socket,next) => {
 
 io.on("connection",(socket) => {
 
-  const user = {
-    _id : "anasn",
-    name : "anas",
-  }
+  const user = socket.user;
+
+  console.log("User is ",user);
 
   userSocketIDs.set(user._id.toString(),socket.id);
   
@@ -121,7 +120,15 @@ io.on("connection",(socket) => {
       chat : chatId,
     }
 
+    console.log(messageForDB);
+
+    console.log(messageForRealTime);
+
+    console.log(members);
+
        const membersSocket = getSockets(members);
+
+       console.log("Members are ",membersSocket);
 
        io.to(membersSocket).emit(NEW_MESSAGE,{
           message : messageForRealTime,
@@ -136,7 +143,6 @@ io.on("connection",(socket) => {
           console.log(error);
        }
 
-       console.log("New Message",messageForRealTime);
   })
 
   socket.on("disconnect",() => {
