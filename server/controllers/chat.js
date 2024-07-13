@@ -1,4 +1,4 @@
-import { ALERT, NEW_ATTACHMENT, NEW_MESSAGE_ALERT, REFETCH_CHATS } from '../constants/event.js'
+import { ALERT, NEW_ATTACHMENT, NEW_MESSAGE, NEW_MESSAGE_ALERT, REFETCH_CHATS } from '../constants/event.js'
 import { TryCatch } from "../middlewares/error.js"
 import { Chat } from "../models/chat.js";
 import { ErrorHandler } from "../utilis/utility.js";
@@ -310,7 +310,7 @@ const sendAttachments = TryCatch(async (req,res,next)=>{
 
     const message = await Message.create(messageForDB);
 
-    emitEvent(req,NEW_ATTACHMENT,chats.members,{
+    emitEvent(req,NEW_MESSAGE,chats.members,{
         message : messageforRealTime,
         chatId
     });

@@ -17,10 +17,14 @@ import { server } from '../components/layout/constants/config';
 import { useDispatch } from 'react-redux';
 import { userExists, userNotExists } from '../redux/reducers/auth';
 import  toast  from 'react-hot-toast';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 const Login = () => {
 
     const dispatch = useDispatch();
+
+    const [showPassword,setShowPassword] = useState(false);
 
     const [isLogin, setIsLogin] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
@@ -138,16 +142,26 @@ const Login = () => {
                     onChange={username.changeHandler}
                   />
   
-                  <TextField
+                 <div className=''>
+                 <TextField
                     required
                     fullWidth
                     label="Password"
-                    type="password"
+                    type={`${showPassword ? "text" : "password"}`}
                     margin="normal"
                     variant="outlined"
                     value={password.value}
                     onChange={password.changeHandler}
+                    
                   />
+                  <IconButton className='relative left-52 bottom-14'> 
+                    {
+                      showPassword ? <VisibilityIcon onClick={()=> setShowPassword(false)} /> : <VisibilityOffIcon onClick={()=> setShowPassword(true)} />
+                    }
+                  </IconButton>
+                 </div>
+
+
   
                   <Button
                     sx={{

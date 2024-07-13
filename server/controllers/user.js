@@ -62,7 +62,7 @@ if(!user) return next(new ErrorHandler("Invalid Username or Password",404));
 const isMatch = await compare(password,user.password);
 
 
-if(!isMatch) return next(new ErrorHandler("Invalid  or Password",404));
+if(!isMatch) return next(new ErrorHandler("Invalid Username or Password",404));
   
 sendToken(res,user,200,`Welcome Back , ${user.name} `);
 

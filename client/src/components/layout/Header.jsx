@@ -1,4 +1,4 @@
-import { AppBar, Backdrop, Box, IconButton, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material'
+import { AppBar, Backdrop, Badge, Box, IconButton, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material'
 import {orange} from './constants/color'
 import React, { Suspense } from 'react'
 import { Logout as LogoutIcon, Notifications as NotificationIcon, Group as GroupIcon,Add as AddIcon, Search as SearchIcon,Menu as MenuIcon} from '@mui/icons-material'
@@ -11,6 +11,7 @@ import { server } from '../layout/constants/config';
 import { useDispatch, useSelector } from 'react-redux'
 import { userNotExists } from '../../redux/reducers/auth'
 import { setIsMobile, setIsNotification, setIsSearch } from '../../redux/reducers/misc'
+import { resetNotification } from '../../redux/reducers/chat'
 
 
 const SearchDialog = lazy(() => import('../specific/Search'));
@@ -26,6 +27,8 @@ const Header = () => {
   const navigate = useNavigate();
 
   const {isSearch,isNotification} = useSelector(state => state.misc);
+  const {notificationCount} = useSelector(state => state.chat);
+
   const [isNewGroup, setIsNewGroup] = useState(false);
  
 
@@ -48,6 +51,7 @@ const Header = () => {
     
     const openNotifications = () => {
       dispatch(setIsNotification(true));
+      dispatch(resetNotification());
     }
 
     const LogoutHandler = async () => {
@@ -106,7 +110,11 @@ const Header = () => {
           </Tooltip>
           <Tooltip title="Notifications" >
           <IconButton color="inherit" size="large" onClick={openNotifications} >
-            <NotificationIcon/>
+            {
+              notificationCount ? <Badge badgeContent={notificationCount} color="error" >
+                <NotificationIcon/>
+              </Badge> : <NotificationIcon/>
+            }
           </IconButton>
           </Tooltip>
           <Tooltip title="Logout" >

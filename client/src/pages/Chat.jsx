@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useRef } from 'react'
+import React, { Fragment, useCallback, useEffect, useRef } from 'react'
 import Applayout from '../components/layout/Applayout'
 import { Icon, IconButton, Skeleton, Stack } from '@mui/material';
 import { grayColor } from '../components/layout/constants/color';
@@ -16,11 +16,14 @@ import { useErrors, useSocketEvents } from '../hooks/hook';
 import { useDispatch, useSelector } from 'react-redux';
 import {useInfiniteScrollTop} from '6pp'
 import { setIsFileMenu } from '../redux/reducers/misc';
+import { clearNewMessagesAlert } from '../redux/reducers/chat';
 
 
 const Chat = ({chatId}) => {
 
   const user  = useSelector((state)=> state.auth.user);
+
+  const {newMessageAlert} = useSelector((state)=> state.chat);
 
 
   const containerRef = useRef(null);
@@ -36,6 +39,8 @@ const Chat = ({chatId}) => {
   const [page,setPage] = useState(1);
 
   const [anchor,setAnchor] = useState(null);
+
+  console.log("New messages alert",newMessageAlert)
 
   console.log("Messages",messages);
   
@@ -87,8 +92,25 @@ const Chat = ({chatId}) => {
 
   const newMessageHandler = useCallback((data)=> {
     console.log("DATA",data);
+    console.log("ChatId",chatId);
+    console.log("Data ChatId",data.chatId);
+
+    if(data.chatId !== chatId) return;
+
     setMessages((prev)=>[...prev,data.message]);
-  },[]);
+  },[chatId]);
+
+ useEffect(()=>{
+
+  dispatch(clearNewMessagesAlert(chatId));
+
+   return () => {
+    setMessages([]);
+    setMessage("");
+    setOldMessage([]);
+    setPage(1);
+   }
+ },[chatId])
 
   const eventArr = {[NEW_MESSAGE] : newMessageHandler};
 
