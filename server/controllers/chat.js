@@ -192,6 +192,9 @@ const removeMembers = TryCatch(async (req, res, next) => {
     console.log(userId.toString(), chat.members);
 
     const initialMemberCount = chat.members.length;
+
+    const allChatMembers = chat.members.map(member => member.toString());  
+
     chat.members = chat.members.filter(member => member.toString() !== userId.toString());
 
     if (chat.members.length === initialMemberCount) {
@@ -201,7 +204,7 @@ const removeMembers = TryCatch(async (req, res, next) => {
     await chat.save();
 
     emitEvent(req, ALERT, chat.members, `${userThatWillBeRemoved.name} has been removed from ${chat.name} group`);
-    emitEvent(req, REFETCH_CHATS, chat.members);
+    emitEvent(req, REFETCH_CHATS, allChatMembers);
 
     return res.status(200).json({
         success: true,
@@ -435,8 +438,12 @@ const deleteChat = TryCatch(async (req,res,next) => {
 const getMessageDetails = TryCatch(async (req,res) => {
      
     const chatId = req.params.id;
-    
-    console.log(chatId);
+
+    const chat = await Chat.findById(chatId);
+
+    if(!chat.members.includes(req.user.toString())) {
+        return next(new ErrorHandler("You are not allowed to view this chat",401));
+    }
 
     const {page = 1}  = req.query;
     

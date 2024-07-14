@@ -1,6 +1,8 @@
 import {styled } from '@mui/system';
 import { Link as LinkedComponent } from 'react-router-dom';
 import { grayColor } from '../layout/constants/color';
+import { Skeleton } from '@mui/material';
+import { keyframes } from '@mui/material';
 
 export const VisuallyHiddenInput = styled("input")({
     border: 0,
@@ -56,3 +58,14 @@ export const CurveButton = styled('button')`
     }
     font-size: 1.1rem;
     `;
+
+const bounceAnimation = keyframes`
+0% {transform : scale(1);}
+50% {transform : scale(1.5);}
+100% {transform : scale(1);}
+`;
+
+
+export const BouncingSkeleton = styled(Skeleton)(()=>({
+    animation : `${bounceAnimation} 1s infinite`,
+}))

@@ -14,7 +14,7 @@ import userRoute from "./routes/user.js";
 import adminRoute from './routes/admin.js'
 
 import { createMessagesInAChat } from "./seeders/chat.js";
-import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "./constants/event.js";
+import { NEW_MESSAGE, NEW_MESSAGE_ALERT, START_TYPING,STOP_TYPING } from "./constants/event.js";
 import { create } from "domain";
 import { getSockets } from "./lib/helper.js";
 import { Message } from "./models/message.js";
@@ -120,12 +120,6 @@ io.on("connection",(socket) => {
       chat : chatId,
     }
 
-    console.log(messageForDB);
-
-    console.log(messageForRealTime);
-
-    console.log(members);
-
        const membersSocket = getSockets(members);
 
        console.log("Members are ",membersSocket);
@@ -144,6 +138,19 @@ io.on("connection",(socket) => {
        }
 
   })
+
+  socket.on(START_TYPING,({members,chatId})=>{
+
+     const membersSocket = getSockets(members);
+
+    io.to(membersSocket).emit(START_TYPING,{chatId});
+  })
+
+  socket.on(STOP_TYPING,({members,chatId})=>{
+    const membersSocket = getSockets(members);
+
+   io.to(membersSocket).emit(STOP_TYPING,{chatId});
+ })
 
   socket.on("disconnect",() => {
     console.log("user disconnected");

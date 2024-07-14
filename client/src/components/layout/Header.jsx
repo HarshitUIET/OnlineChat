@@ -10,7 +10,7 @@ import axios from 'axios'
 import { server } from '../layout/constants/config';
 import { useDispatch, useSelector } from 'react-redux'
 import { userNotExists } from '../../redux/reducers/auth'
-import { setIsMobile, setIsNotification, setIsSearch } from '../../redux/reducers/misc'
+import { setIsMobile, setIsNewGroup, setIsNotification, setIsSearch } from '../../redux/reducers/misc'
 import { resetNotification } from '../../redux/reducers/chat'
 
 
@@ -29,7 +29,7 @@ const Header = () => {
   const {isSearch,isNotification} = useSelector(state => state.misc);
   const {notificationCount} = useSelector(state => state.chat);
 
-  const [isNewGroup, setIsNewGroup] = useState(false);
+  const {isNewGroup} = useSelector((state)=> state.misc);
  
 
    const handleMobile = () => {
@@ -41,7 +41,7 @@ const Header = () => {
     }
 
     const openNewGroup = () => {
-      setIsNewGroup((prev)=>!prev);
+      dispatch(setIsNewGroup(true));
     }
 
     const navigateToGroup = () => {

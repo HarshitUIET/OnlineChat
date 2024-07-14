@@ -10,20 +10,31 @@ import { sampleMessage } from '../components/layout/constants/sampleData';
 import MessageComponent from '../components/share/MessageComponent';
 import { useState } from 'react';
 import { getSocket } from '../socket';
-import { NEW_MESSAGE } from '../components/layout/constants/event';
+import { NEW_MESSAGE, STOP_TYPING } from '../components/layout/constants/event';
 import { useChatDetailsQuery, useGetMessagesQuery } from '../redux/api/api';
 import { useErrors, useSocketEvents } from '../hooks/hook';
 import { useDispatch, useSelector } from 'react-redux';
 import {useInfiniteScrollTop} from '6pp'
 import { setIsFileMenu } from '../redux/reducers/misc';
 import { clearNewMessagesAlert } from '../redux/reducers/chat';
+import { START_TYPING } from '../../../server/constants/event';
+import { TypingLoader } from '../components/layout/Loaders';
+import { ALERT } from '../components/layout/constants/event';
+import { useNavigate } from 'react-router-dom';
+
 
 
 const Chat = ({chatId}) => {
 
+  const navigate = useNavigate();
+
   const user  = useSelector((state)=> state.auth.user);
 
   const {newMessageAlert} = useSelector((state)=> state.chat);
+
+  const [IamTyping,setIamTyping] = useState(false);
+  const [userTyping,setUserTyping] = useState(false);
+  const typingTimeout = useRef(null);
 
 
   const containerRef = useRef(null);
@@ -38,11 +49,9 @@ const Chat = ({chatId}) => {
 
   const [page,setPage] = useState(1);
 
+  const bottomRef = useRef(null);
+
   const [anchor,setAnchor] = useState(null);
-
-  console.log("New messages alert",newMessageAlert)
-
-  console.log("Messages",messages);
   
   const chatDetails = useChatDetailsQuery({chatId,skip:!chatId});
 
@@ -91,13 +100,46 @@ const Chat = ({chatId}) => {
 
 
   const newMessageHandler = useCallback((data)=> {
-    console.log("DATA",data);
-    console.log("ChatId",chatId);
-    console.log("Data ChatId",data.chatId);
 
     if(data.chatId !== chatId) return;
 
     setMessages((prev)=>[...prev,data.message]);
+  },[chatId]);
+
+  const messageChangeHandler = (e) => {
+
+    setMessage(e.target.value);
+
+     console.log(IamTyping);
+
+    if(!IamTyping) {
+      socket.emit(START_TYPING,{members,chatId});
+      setIamTyping(true);
+    }  
+
+
+    if(typingTimeout.current) clearTimeout(typingTimeout.current);
+
+
+    typingTimeout.current =  setTimeout(()=>{
+        socket.emit(STOP_TYPING,{members,chatId});
+        setIamTyping(false);
+     },[2000])
+
+  }
+
+  const newMessagesListener = useCallback((data)=> {
+    
+      if(data.chatId !== chatId ) return ;
+
+      setUserTyping(true);
+  },[chatId]);
+
+  const stopTypingListener = useCallback((data)=> {
+
+    if(data.chatId !== chatId) return;
+
+    setUserTyping(false);
   },[chatId]);
 
  useEffect(()=>{
@@ -112,7 +154,42 @@ const Chat = ({chatId}) => {
    }
  },[chatId])
 
-  const eventArr = {[NEW_MESSAGE] : newMessageHandler};
+
+ useEffect(()=>{
+  if(!chatDetails.data?.chat) {
+     navigate('/');
+  }
+ },[chatDetails.data])
+
+ useEffect(()=>{
+  if(bottomRef.current){
+    bottomRef.current.scrollIntoView({behavior : "smooth"});
+  }
+ },[messages])
+
+ const alertListener = useCallback((content)=>{
+  
+  const messageForAlert = {
+    content,
+    sender : {
+      _id : Math.random(),
+      name : "Admin"
+    },
+    chat : chatId,
+    createdAt : new Date().toISOString()
+  }
+
+
+  setMessages((prev) => [...prev,messageForAlert]);
+
+ },[chatId]);
+
+  const eventArr = {
+    [ALERT] : alertListener,
+    [NEW_MESSAGE] : newMessageHandler,
+    [START_TYPING] : newMessagesListener,
+    [STOP_TYPING] : stopTypingListener
+  };
 
   useSocketEvents(socket,eventArr)
 
@@ -135,6 +212,15 @@ const Chat = ({chatId}) => {
             <MessageComponent user={user} key={i._id} message={i}/>
           ))
         }
+
+        {
+          userTyping && <TypingLoader/>
+        }
+
+       <div
+        ref={bottomRef}
+       />
+
       </Stack>
      
       <form 
@@ -164,7 +250,7 @@ const Chat = ({chatId}) => {
           </IconButton>
 
           <InputBox placeholder='Type Message Here...'
-           value={message} onChange={(e)=> setMessage(e.target.value)}
+           value={message} onChange={messageChangeHandler}
           />
 
           <IconButton

@@ -9,7 +9,7 @@ const app = express.Router();
 
 app.use(isAuthenticated);
 
-app.get('/new',newGroupChatValidator(),validateHandler, newGroupChat);
+app.post('/new',newGroupChatValidator(),validateHandler, newGroupChat);
 app.get('/my',getMyChat);
 app.get('/my/groups',getMyGroups);
 app.put('/addmembers',addMemberValidator(),validateHandler,addMembers);
