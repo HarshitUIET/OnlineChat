@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, memo, useEffect } from 'react'
-import { Backdrop, Box, Button, Drawer, Grid , IconButton, Stack, TextField, Tooltip, Typography } from '@mui/material'
+import { Backdrop, Box, Button, Drawer, Grid , IconButton, Skeleton, Stack, TextField, Tooltip, Typography } from '@mui/material'
 import { matBlack } from '../components/layout/constants/color'
 import { useNavigate } from 'react-router-dom'
 import { Add as AddIcon,Delete as DeleteIcon, KeyboardBackspace as KeyboardBackspaceIcon, Menu as MenuIcon, Edit as EditIcon, Done as DoneIcon } from '@mui/icons-material'
@@ -9,7 +9,7 @@ import AvatarCard from '../components/share/AvatarCard'
 import {sampleUsers, samplechats} from '../components/layout/constants/sampleData'
 import { useSearchParams } from 'react-router-dom'
 import UserItem from '../components/share/UserItem'
-import { useAddGroupMembersMutation, useAvailableFriendsQuery, useChatDetailsQuery, useMyGroupsQuery, useRemoveGroupMembersMutation, useRenameGroupMutation } from '../redux/api/api'
+import { useAddGroupMembersMutation, useAvailableFriendsQuery, useChatDetailsQuery, useDeleteChatMutation, useMyGroupsQuery, useRemoveGroupMembersMutation, useRenameGroupMutation } from '../redux/api/api'
 import { useAsyncMutation, useErrors } from '../hooks/hook'
 import { LayoutLoader } from '../components/layout/Loaders'
 import { useDispatch, useSelector } from 'react-redux'
@@ -54,6 +54,7 @@ const Group = () => {
 
    const [removeMember,isLoadingRemoveGroupMember] = useAsyncMutation(useRemoveGroupMembersMutation);
 
+   const [deleteGroup,isLoadingDeleteGroup] = useAsyncMutation(useDeleteChatMutation);
 
    useEffect(()=>{
     
@@ -110,8 +111,9 @@ const Group = () => {
   }
 
   const deleteHandler = () => {
-    console.log("Delete Handler");
+    deleteGroup("Deleting Group...",chatId)
     closeConfirmDeleteHandler();
+    navigate("/group");
   }
 
   const removeMemberHandler = (id) => {
@@ -263,6 +265,7 @@ const Group = () => {
           overflow={"auto"}
           >
            {
+            isLoadingRemoveGroupMember ? <Skeleton/> :
             members.map((i)=>{
             return <UserItem key={i._id} user={i} 
               isAdded 

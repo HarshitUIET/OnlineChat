@@ -9,6 +9,8 @@ import { useState } from 'react'
 import { useLocation , Link as LinkComponent } from 'react-router-dom'
 import {styled } from '@mui/system';
 import { Navigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux'
+import { adminLogout } from '../../redux/thunks/admin'
 
 const Link = styled(LinkComponent) `
   text-decoration : none;
@@ -45,10 +47,12 @@ const adminTabs = [
 
 const Sidebar = ({w ="100%"}) => {
 
+    const dispatch = useDispatch();
+
      const location = useLocation();
 
      const logoutHandler = () => {
-            console.log("Logout Handler");
+        dispatch(adminLogout());
      }
 
     return <Stack width={w} direction={"column"} spacing={"3rem"} p={"3rem"} >
@@ -89,14 +93,10 @@ const Sidebar = ({w ="100%"}) => {
     </Stack>
 }
 
-const isAdmin = true;
 
 const AdminLayout = ({children}) => {
 
-
-    if(!isAdmin) {
-        return <Navigate to = '/admin' />
-    }
+    const {isAdmin} = useSelector(state => state.auth);
 
     const [isMobile,setIsMobile] = useState(false);
 
@@ -106,6 +106,10 @@ const AdminLayout = ({children}) => {
 
     const handleClose = () => {
         setIsMobile(false);
+    }
+
+    if(!isAdmin) {
+        return <Navigate to = '/admin' />
     }
 
   return (

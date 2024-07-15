@@ -4,6 +4,7 @@ import { lightBlue } from '../layout/constants/color';
 import moment from 'moment';
 import { fileformat } from '../../lib/features';
 import RenderComponent from './RenderComponent';
+import {motion} from 'framer-motion';
 
 const MessageComponent = ({message,user}) => {
 
@@ -14,7 +15,9 @@ const MessageComponent = ({message,user}) => {
     const timeAgo = moment(createdAt).fromNow();
 
   return (
-    <div
+    <motion.div
+    initial={{opacity:0,x:"-100%"}}
+    whileInView={{opacity:1,x:0}}
     style={{
         alignSelf: sameSender ? "flex-end" : "flex-start",
         backgroundColor:"white",
@@ -58,7 +61,7 @@ const MessageComponent = ({message,user}) => {
 
     
 
-    </div>
+    </motion.div>
   )
 }
 

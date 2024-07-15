@@ -139,7 +139,10 @@ const addMembers = TryCatch(async (req, res, next) => {
     await chat.save();
 
     const allUsersName = newMembers.join(",");
-    emitEvent(req, ALERT, chat.members, `${allUsersName} has been added to ${chat.name} group`);
+    emitEvent(req, ALERT, chat.members,{
+        chatId,
+        message : `${allUsersName} has been added to ${chat.name} group`
+    });
     emitEvent(req, REFETCH_CHATS, chat.members);
   }
 
@@ -203,7 +206,10 @@ const removeMembers = TryCatch(async (req, res, next) => {
 
     await chat.save();
 
-    emitEvent(req, ALERT, chat.members, `${userThatWillBeRemoved.name} has been removed from ${chat.name} group`);
+    emitEvent(req, ALERT, chat.members,{
+        chatId,
+        message :  `${userThatWillBeRemoved.name} has been removed from ${chat.name} group`
+    });
     emitEvent(req, REFETCH_CHATS, allChatMembers);
 
     return res.status(200).json({
@@ -251,7 +257,10 @@ const leaveGroup = TryCatch( async (req,res,next) => {
         User.findById(req.user).select('name')
         , chat.save()]);
     
-    emitEvent(req,ALERT,chat.members,`${user.name} has left the group`);
+    emitEvent(req,ALERT,chat.members,{
+        chatId,
+        message : `${user.name} has left the group`
+    });
 
     return res.status(200).json(({
         succes: true,
@@ -400,6 +409,10 @@ const deleteChat = TryCatch(async (req,res,next) => {
 
     const chat = await Chat.findById(chatId);
 
+    const members = chat.members;
+
+    console.log(chat);
+
     if(!chat) return next(new ErrorHandler("Chat not found",404));
 
     if(chat.groupChat && chat.creator.toString() !== req.user.toString()) return next(new ErrorHandler("You are not allowed to delete the chat",401));
@@ -421,11 +434,11 @@ const deleteChat = TryCatch(async (req,res,next) => {
 
     await Promise.all([
         deleteFilesFromCloudinary(public_ids),  
-        Chat.deleteOne(),
+        chat.deleteOne(),
         Message.deleteMany({chat : chatId}),
     ]);
 
-       emitEvent(req,REFETCH_CHATS,chat.members);
+       emitEvent(req,REFETCH_CHATS,members);
 
          return res.status(200).json({
               success : true,

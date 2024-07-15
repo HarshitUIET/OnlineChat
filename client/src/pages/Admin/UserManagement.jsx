@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react'
 import AdminLayout from '../../components/layout/AdminLayout'
 import Table from '../../components/share/Table'
-import { Avatar } from '@mui/material'
+import { Avatar, Skeleton } from '@mui/material'
 import { useState } from 'react'
 import { dashboardData } from '../../components/layout/constants/sampleData'
 import { transformImage } from '../../lib/features'
+import { useGetUserStatsQuery } from '../../redux/api/api'
+import { useErrors } from '../../hooks/hook'
 
 const columns = [
     {
@@ -54,20 +56,40 @@ const UserManagement = () => {
 
     const [rows,setRows] = useState([]);
 
+    const getUserStats = useGetUserStatsQuery("");
+
+    console.log(getUserStats);
+
     useEffect(()=>{
-        setRows(
-            dashboardData.users.map((i)=>({
-                ...i,
-                id : i._id,
-                avatar : transformImage(i.avatar,50)
-            }
-            ))
-        )
-    },[])
+        if(getUserStats.data) {
+            setRows(
+                getUserStats?.data?.users.map((i)=>({
+                    ...i,
+                    id : i._id,
+                    avatar : transformImage(i.avatar,50)
+                }
+                ))
+            )
+        }
+    },[getUserStats.data])
+
+    const eventArr = [
+        {error : getUserStats.error},
+        {isError : getUserStats.isError},
+    ]
+
+    useErrors(eventArr);
 
   return (
     <AdminLayout>
-        <Table heading = {"All Users"} columns={columns} rows={rows} />
+        {
+            getUserStats.isLoading ?
+
+            <Skeleton height={"100vh"} /> :
+ 
+            <Table heading = {"All Users"} columns={columns} rows={rows} />
+        
+        }
     </AdminLayout>
   )
 }

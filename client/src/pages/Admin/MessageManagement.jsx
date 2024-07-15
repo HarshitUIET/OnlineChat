@@ -5,9 +5,11 @@ import { dashboardData } from '../../components/layout/constants/sampleData'
 import { fileformat, transformImage } from '../../lib/features'
 import moment from 'moment'
 import Table from '../../components/share/Table'
-import { Avatar, Stack } from '@mui/material'
+import { Avatar, Skeleton, Stack } from '@mui/material'
 import RenderComponent from '../../components/share/RenderComponent'
 import { Box } from '@mui/system'
+import { useGetMessagesQuery, useGetMessagesStatsQuery } from '../../redux/api/api'
+import { useErrors } from '../../hooks/hook'
 
 const columns = [
     {
@@ -86,26 +88,45 @@ const MessageManagement = () => {
 
     const [rows,setRows] = useState([]);
 
+    const getMessages = useGetMessagesStatsQuery();
+
+    console.log("Get Messages data is ",getMessages.data);
+
+    const eventArr = [
+        {error : getMessages.error},
+        {isError : getMessages.isError}
+    ]
+
+    useErrors(eventArr);
+
     useEffect(()=>{
-        setRows(
-            dashboardData.messages.map((i)=>({
-                ...i,
-                id : i._id,
-                sender : {
-                    name : i.sender.name,
-                    avatar : transformImage(i.sender.avatar,50)
-                },
-                createdAt : moment(i.createdAt).format("MMMM Do YYYY, h:mm:ss a")
-            }
-            ))
-        )
+        if(getMessages.data) {
+            setRows(
+                getMessages?.data?.messages.map((i)=>({
+                    ...i,
+                    id : i._id,
+                    sender : {
+                        name : i.sender.name,
+                        avatar : transformImage(i.sender.avatar,50)
+                    },
+                    createdAt : moment(i.createdAt).format("MMMM Do YYYY, h:mm:ss a")
+                }
+                ))
+            )
+        }
     }
-    ,[])
+    ,[getMessages.data])
 
   return (
     <AdminLayout>
-       <Table 
-       heading={"All Messages"} columns={columns} rows={rows} rowHeight={200}   />
+        {
+            getMessages.isLoading ? <Skeleton height={"100vh"} /> :
+
+            <Table 
+            heading={"All Messages"} columns={columns} rows={rows} rowHeight={200}   />
+        
+        }
+      
     </AdminLayout>
   )
 }

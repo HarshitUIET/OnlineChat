@@ -137,7 +137,52 @@ const api = createApi({
                 body : {chatId,members}
             }),
             invalidatesTags : ['Chat']
-        })
+        }),
+        deleteChat : builder.mutation({
+            query : (chatId) => ({
+                url : `chat/${chatId}`,
+                method:"DELETE",
+                credentials:"include",
+            }),
+            invalidatesTags : ['Chat']
+        }),
+        leaveGroup : builder.mutation({
+            query : (chatId) => ({
+                url : `chat/leave/${chatId}`,
+                method:"DELETE",
+                credentials:"include",
+            }),
+            invalidatesTags : ['Chat']
+        }),
+        getDashboardStats : builder.query({
+            query : () => ({
+                url : 'admin/stats',
+                credentials : "include"
+            }),
+            keepUnusedDataFor : 0
+        }),
+        getUserStats : builder.query({
+            query : () => ({
+                url : 'admin/users',
+                credentials : "include"
+            }),
+            keepUnusedDataFor : 0
+        }),
+        getChatStats : builder.query({
+            query : () => ({
+                url : 'admin/chats',
+                credentials : "include"
+            }),
+            keepUnusedDataFor : 0
+        }),
+        getMessagesStats : builder.query({
+            query : () => ({
+                url : 'admin/messages',
+                credentials : "include"
+            }),
+            keepUnusedDataFor : 0
+        }),
+          
     })
 
 })
@@ -146,4 +191,4 @@ const api = createApi({
 
 export default api;
 
-export const { useMyChatsQuery, useLazySearchUserQuery, useSendFriendRequestMutation,useGetNotificationsQuery,useAcceptFriendRequestMutation,useChatDetailsQuery,useGetMessagesQuery,useSendAttachmentsMutation,useMyGroupsQuery,useAvailableFriendsQuery,useNewGroupMutation,useRenameGroupMutation,useRemoveGroupMembersMutation,useAddGroupMembersMutation } = api;
+export const { useMyChatsQuery, useLazySearchUserQuery, useSendFriendRequestMutation,useGetNotificationsQuery,useAcceptFriendRequestMutation,useChatDetailsQuery,useGetMessagesQuery,useSendAttachmentsMutation,useMyGroupsQuery,useAvailableFriendsQuery,useNewGroupMutation,useRenameGroupMutation,useRemoveGroupMembersMutation,useAddGroupMembersMutation,useDeleteChatMutation,useLeaveGroupMutation,useGetDashboardStatsQuery,useGetChatStatsQuery,useGetMessagesStatsQuery,useGetUserStatsQuery } = api;

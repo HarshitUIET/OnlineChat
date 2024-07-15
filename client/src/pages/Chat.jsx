@@ -155,11 +155,11 @@ const Chat = ({chatId}) => {
  },[chatId])
 
 
- useEffect(()=>{
-  if(!chatDetails.data?.chat) {
-     navigate('/');
-  }
- },[chatDetails.data])
+//  useEffect(()=>{
+//   if(!chatDetails.isError) {
+//      navigate('/');
+//   }
+//  },[chatDetails.isError])
 
  useEffect(()=>{
   if(bottomRef.current){
@@ -167,10 +167,12 @@ const Chat = ({chatId}) => {
   }
  },[messages])
 
- const alertListener = useCallback((content)=>{
+ const alertListener = useCallback((data)=>{
+
+  if(data.chatId !== chatId) return;
   
   const messageForAlert = {
-    content,
+    content : data.message,
     sender : {
       _id : Math.random(),
       name : "Admin"

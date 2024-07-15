@@ -1,11 +1,14 @@
 import React, { useEffect } from 'react'
 import AdminLayout from '../../components/layout/AdminLayout'
 import Table from '../../components/share/Table'
-import { Avatar, Stack } from '@mui/material'
+import { Avatar, Skeleton, Stack } from '@mui/material'
 import { useState } from 'react'
 import { dashboardData } from '../../components/layout/constants/sampleData'
 import { transformImage } from '../../lib/features'
 import AvatarCard from '../../components/share/AvatarCard'
+import { useDispatch } from 'react-redux'
+import { useGetChatStatsQuery } from '../../redux/api/api'
+import { useErrors } from '../../hooks/hook'
 
 const columns = [
     {
@@ -28,6 +31,12 @@ const columns = [
     {
         field : "name",
         headerName : "Name",
+        headerClassName : "table-header",
+        width : 200,
+    },
+    {
+        field : "groupChat",
+        headerName : "Group Chat",
         headerClassName : "table-header",
         width : 200,
     },
@@ -70,28 +79,49 @@ const columns = [
 
 const ChatManagement = () => {
 
+
+    const dipatch = useDispatch();
+
+    const getChats = useGetChatStatsQuery("");
+
+    console.log(getChats.data);
+
+
+    const eventArr = [
+        {isError : getChats.isError},
+        {error : getChats.error}
+    ]
+
+    useErrors(eventArr);
+
     const [rows,setRows] = useState([]);
 
     useEffect(()=>{
-        setRows(
-            dashboardData.chats.map((i)=>({
-                ...i,
-                id : i._id,
-                avatar : i.avatar.map((i)=>transformImage(i,50)),
-                members : i.members.map((i)=>transformImage(i.avatar,50)),
-                creator : {
-                    name : i.creator.name,
-                    avatar : transformImage(i.creator.avatar,50)
+        if(getChats.data) {
+            setRows(
+                getChats?.data?.chats.map((i)=>({
+                    ...i,
+                    id : i._id,
+                    avatar : i.avatar.map((i)=>transformImage(i,50)),
+                    members : i.members.map((i)=>transformImage(i.avatar,50)),
+                    creator : {
+                        name : i.creator.name,
+                        avatar : transformImage(i.creator.avatar,50)
+                    }
                 }
-            }
-            ))
-        )
+                ))
+            )
+        }
     }
-    ,[])
+    ,[getChats.data])
 
   return (
     <AdminLayout>
-        <Table heading = {"All Chats"} columns={columns} rows={rows} />
+        {
+            getChats.isLoading ? <Skeleton height={"100vh"} /> :
+            <Table heading = {"All Chats"} columns={columns} rows={rows} />
+        }
+        
     </AdminLayout>
   )
 }

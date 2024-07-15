@@ -6,7 +6,9 @@ import { ErrorHandler } from "../utilis/utility.js";
 import jwt from 'jsonwebtoken';
 import { cookieOptions } from "../utilis/features.js";
 
+
 const adminLogin = TryCatch(async (req, res, next) => {
+
     
     const {secretKey} = req.body;
 
@@ -116,32 +118,43 @@ const allChats = TryCatch(async (req, res, next) => {
 
 
 const allMessages = TryCatch(async (req, res, next) => {
+    try {
+        const messages = await Message.find({})
+            .populate('sender', 'name avatar')
+            .populate('chat', 'groupChat');
 
-    const messages = await Message.find({}).
-        populate('sender', 'name avatar').
-        populate('chat', 'groupChat');
+        console.log(messages);
 
-    const transformMessages = messages.map((
-        { content, attachments, sender, chat, _id, createdAt }) => ({
-            _id,
-            attachments,
-            content,
-            createdAt,
-            chat : chat._id,
-            groupChat : chat.groupChat,
-            sender : {
-                _id : sender._id,
-                name : sender.name,
-                avatar : sender.avatar.url
-            }
-        }))
+        const transformMessages = messages.map(({ content, attachments, _id, sender, createdAt, chat }) => {
+            return {
+                _id,
+                attachments,
+                content,
+                createdAt,
+                chat: chat ? chat._id : null,
+                groupChat: chat ? chat.groupChat : null,
+                sender: sender ? {
+                    _id: sender._id,
+                    name: sender.name,
+                    avatar: sender.avatar ? sender.avatar.url : null
+                } : null
+            };
+        });
 
-    return res.status(200).json({
-        success: "true",
-        messages: transformMessages
-    })
+        console.log("Here");
 
-})
+        return res.status(200).json({
+            success: true,
+            messages: transformMessages
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+});
 
 const getDashBoardStats = TryCatch(async (req, res, next) => {
 
@@ -194,5 +207,11 @@ const getDashBoardStats = TryCatch(async (req, res, next) => {
 
 })
 
+const getAdminData = TryCatch(async (req,res,next) => {
+    return res.status(200).json({
+        admin : true
+    })
+})
 
-export { allUsers, allChats,allMessages,getDashBoardStats,adminLogin,adminLogout }
+
+export { allUsers, allChats,allMessages,getDashBoardStats,adminLogin,adminLogout,getAdminData }

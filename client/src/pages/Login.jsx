@@ -44,6 +44,12 @@ const Login = () => {
 
         e.preventDefault();
 
+        const toastId = toast.loading("Logging In....");
+
+        setIsLoading(true);
+
+        
+
         const config = {
             withCredentials: true,
             headers: {
@@ -58,17 +64,30 @@ const Login = () => {
         },
         config
     )
-        dispatch(userExists(true));
-        toast.success(data.message);
+        dispatch(userExists(data.user));
+        toast.success(data.message,{
+          id : toastId
+        });
        } catch (error) {
         dispatch(userNotExists());
         console.log(error);
-        toast.error(error?.response?.data?.message || "something went wrong");
+        toast.error(error?.response?.data?.message || "something went wrong",{
+          id : toastId
+        });
+       }
+       finally{
+          setIsLoading(false);
        }
     }
 
     const handleSignUp = async (e) => {
-        e.preventDefault();
+
+         e.preventDefault();
+
+         const toastId = toast.loading("Signing Up....");
+
+        setIsLoading(true);
+        
 
         console.log("avatar is ",avatar.file);
         console.log("name is ",name.value);
@@ -92,10 +111,13 @@ const Login = () => {
         }
         try {
            const {data} = await axios.post(`${server}/api/v1/user/new`,formData,config);
-           dispatch(userExists(true));
-           toast.success(data.message);
+           dispatch(userExists(data.user));
+           toast.success(data.message,{id:toastId});
         } catch (error) {
-            toast.error(error?.response?.data?.message || "something went wrong");
+            toast.error(error?.response?.data?.message || "something went wrong",{id:toastId});
+        }
+        finally{
+          setIsLoading(false);
         }
 
     }

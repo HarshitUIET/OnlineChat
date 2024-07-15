@@ -6,6 +6,9 @@ import { Stack } from '@mui/material'
 import { SearchField,CurveButton } from '../../components/style/stylecomponent'
 import moment from 'moment'
 import { DoughnutChart, LineChart } from '../../components/specific/Charts'
+import { useGetDashboardStatsQuery } from '../../redux/api/api'
+import { useErrors } from '../../hooks/hook'
+import { LayoutLoader } from '../../components/layout/Loaders'
 
 
 const Appbar = (
@@ -41,6 +44,28 @@ const Appbar = (
 
 const Dashboard = () => {
 
+   const getDashboardStats = useGetDashboardStatsQuery("");
+
+   console.log(getDashboardStats.data);
+
+
+   const totalChats = getDashboardStats?.data?.stats?.totalChatsCount;
+
+   const groupChats = getDashboardStats?.data?.stats?.groupsCount;
+
+   const singleChats = totalChats - groupChats;
+
+   const usersCount = getDashboardStats?.data?.stats?.usersCount;
+   const messagesCount = getDashboardStats?.data?.stats?.messagesCount;
+
+
+   const eventArr = [
+     {error : getDashboardStats.error},
+    {isError : getDashboardStats.isError}
+   ]
+
+   useErrors(eventArr);
+
     const Widgets = <Stack
     direction={{
         xs:"column",
@@ -51,12 +76,14 @@ const Dashboard = () => {
     alignItems={"center"}
     margin={"2rem 0"}
     >
-        <Widget title={"Users"} value={34} Icon={<PersonIcon/>} />
-        <Widget title={"Chats"} value={3}  Icon={<GroupIcon/>} />
-        <Widget title={"Messages"} value={450} Icon={<MessageIcon/>} />
+        <Widget title={"Users"} value={usersCount} Icon={<PersonIcon/>} />
+        <Widget title={"Chats"} value={groupChats}  Icon={<GroupIcon/>} />
+        <Widget title={"Messages"} value={messagesCount} Icon={<MessageIcon/>} />
     </Stack>
 
   return (
+    getDashboardStats.isLoading ?
+     <LayoutLoader/> :
     <AdminLayout>
         <Container component={"main"} >
             {Appbar}
@@ -84,7 +111,7 @@ const Dashboard = () => {
                 }}
                >
                 <Typography variant={"h4"} margin={"2rem 0"} >Last Messages</Typography>
-                 <LineChart value={[23,42,13,19,11]} />
+                 <LineChart value={getDashboardStats?.data?.stats?.messagesChart || []} />
                </Paper>
                
               <Paper
@@ -106,7 +133,7 @@ const Dashboard = () => {
               >
                 <DoughnutChart 
                  labels={["Single Chats","Group Chats"]}
-                  value={[23,66]}
+                  value={[singleChats || 0, groupChats || 0]}
                 />
 
                 <Stack

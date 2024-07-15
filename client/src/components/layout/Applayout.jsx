@@ -1,25 +1,30 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useRef } from 'react'
 import Header from './Header'
 import Title from '../share/Title'
 import { Drawer, Grid, Skeleton } from '@mui/material'
 import ChatList from '../specific/ChatList'
 import { samplechats } from './constants/sampleData'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import Profile from '../specific/Profile'
 import { useMyChatsQuery } from '../../redux/api/api'
 import { useDispatch, useSelector } from 'react-redux'
-import { setIsMobile } from '../../redux/reducers/misc'
+import { setIsDeleteMenu, setIsMobile, setSelectedDeleteChat } from '../../redux/reducers/misc'
 import {useErrors, useSocketEvents} from '../../hooks/hook'
 import { getSocket } from '../../socket'
 import { NEW_MESSAGE, NEW_MESSAGE_ALERT, NEW_REQUEST, REFETCH_CHATS } from './constants/event'
 import { incrementNotification, setNewMessagesAlert } from '../../redux/reducers/chat'
 import { useEffect } from 'react'
 import { getOrSaveStorage } from '../../lib/features'
+import DeleteChatMenu from '../Dialog/DeleteChatMenu'
 
 const Applayout = () => (WrappedComponent) => {
    return (props) => {
 
       const params = useParams();
+
+      const deleteMenuAnchor = useRef(null);
+
+      const navigate = useNavigate();
 
       const dispatch = useDispatch();
 
@@ -47,8 +52,10 @@ const Applayout = () => (WrappedComponent) => {
 
 
 
-      const handleDeleteChat = (e, _id, groupChat) => {
-         e.preventDefault();
+      const handleDeleteChat = (e, chatId, groupChat) => {
+         dispatch(setIsDeleteMenu(true));
+         dispatch(setSelectedDeleteChat({chatId,groupChat}));
+         deleteMenuAnchor.current = e.currentTarget;
          console.log("Delete Chat", _id, groupChat);
       }
 
@@ -66,6 +73,7 @@ const Applayout = () => (WrappedComponent) => {
 
       const refetchHandler = useCallback(()=> {
          refetch();
+         navigate('/');
       },[refetch]);
 
       const eventHandlers = {
@@ -80,6 +88,8 @@ const Applayout = () => (WrappedComponent) => {
          <div className=' h-screen' >
             <Title />
             <Header />
+
+            <DeleteChatMenu deleteMenuAnchor={deleteMenuAnchor}/>
 
             {
                isLoading ? <Skeleton /> : (
@@ -114,7 +124,7 @@ const Applayout = () => (WrappedComponent) => {
                   }
                </Grid>
                <Grid item xs={12} sm={8} md={5} lg={6} height={"100%"} >
-                  <WrappedComponent chatId={chatId} {...props} />
+                  <WrappedComponent user={user} chatId={chatId} {...props} />
                </Grid>
                <Grid item md={4} lg={3} height={"100%"}
                   sx={{
