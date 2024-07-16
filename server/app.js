@@ -14,7 +14,7 @@ import userRoute from "./routes/user.js";
 import adminRoute from './routes/admin.js'
 
 import { createMessagesInAChat } from "./seeders/chat.js";
-import { NEW_MESSAGE, NEW_MESSAGE_ALERT, START_TYPING,STOP_TYPING } from "./constants/event.js";
+import { CHAT_EXITED, CHAT_JOINED, NEW_MESSAGE, NEW_MESSAGE_ALERT, ONLINE_USERS, START_TYPING,STOP_TYPING } from "./constants/event.js";
 import { create } from "domain";
 import { getSockets } from "./lib/helper.js";
 import { Message } from "./models/message.js";
@@ -29,6 +29,8 @@ const PORT = process.env.PORT || 3000;
 const envMode = process.env.NODE_ENV.trim() || "PRODUCTION";
 
 const userSocketIDs = new Map();
+
+const OnlineUsers = new Set();
 
 dbConnect(MONGO_URL);
 Cloudinary.config({
@@ -94,14 +96,8 @@ io.on("connection",(socket) => {
 
   const user = socket.user;
 
-  console.log("User is ",user);
-
   userSocketIDs.set(user._id.toString(),socket.id);
   
-  console.log(" a user connected ",socket.id);
-
-  console.log(userSocketIDs);
-
   socket.on(NEW_MESSAGE,async ({chatId,members,message}) => {
      const messageForRealTime = {
        content : message,
@@ -122,7 +118,6 @@ io.on("connection",(socket) => {
 
        const membersSocket = getSockets(members);
 
-       console.log("Members are ",membersSocket);
 
        io.to(membersSocket).emit(NEW_MESSAGE,{
           message : messageForRealTime,
@@ -152,9 +147,35 @@ io.on("connection",(socket) => {
    io.to(membersSocket).emit(STOP_TYPING,{chatId});
  })
 
+ socket.on(CHAT_JOINED,({members,userId}) => {
+
+     OnlineUsers.add(userId.toString());
+
+     console.log("Chat joined ",OnlineUsers);
+
+    const membersSocket = getSockets(members);
+
+    console.log(membersSocket);
+  
+    io.to(membersSocket).emit(ONLINE_USERS,Array.from(OnlineUsers));
+ })
+
+ socket.on(CHAT_EXITED,({members,userId})=>{
+    OnlineUsers.delete(userId.toString());
+
+    console.log("Chat exited ",OnlineUsers);
+
+    const membersSocket = getSockets(members);
+    console.log(membersSocket);
+    io.to(membersSocket).emit(ONLINE_USERS,Array.from(OnlineUsers));
+ })
+
+
+
   socket.on("disconnect",() => {
-    console.log("user disconnected");
     userSocketIDs.delete(user._id.toString());
+    OnlineUsers.delete(user._id.toString());
+    socket.broadcast.emit(ONLINE_USERS,Array.from(OnlineUsers));
   })
 
 })

@@ -10,7 +10,7 @@ import { sampleMessage } from '../components/layout/constants/sampleData';
 import MessageComponent from '../components/share/MessageComponent';
 import { useState } from 'react';
 import { getSocket } from '../socket';
-import { NEW_MESSAGE, STOP_TYPING } from '../components/layout/constants/event';
+import { CHAT_JOINED,CHAT_EXITED, NEW_MESSAGE, STOP_TYPING } from '../components/layout/constants/event';
 import { useChatDetailsQuery, useGetMessagesQuery } from '../redux/api/api';
 import { useErrors, useSocketEvents } from '../hooks/hook';
 import { useDispatch, useSelector } from 'react-redux';
@@ -146,11 +146,14 @@ const Chat = ({chatId}) => {
 
   dispatch(clearNewMessagesAlert(chatId));
 
+  socket.emit(CHAT_JOINED,{members,userId:user._id});
+
    return () => {
     setMessages([]);
     setMessage("");
     setOldMessage([]);
     setPage(1);
+    socket.emit(CHAT_EXITED,{members,userId:user._id});
    }
  },[chatId])
 

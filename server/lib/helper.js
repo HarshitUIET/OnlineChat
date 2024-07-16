@@ -6,7 +6,7 @@ export const getOtherMember = (members, userId) => {
 
 export const getSockets = (users=[]) => {
     const sockets = users.map((user) => {
-        console.log(user.toString());
+
        return userSocketIDs.get(user.toString());
     })
     return sockets;

@@ -11,16 +11,19 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setIsDeleteMenu, setIsMobile, setSelectedDeleteChat } from '../../redux/reducers/misc'
 import {useErrors, useSocketEvents} from '../../hooks/hook'
 import { getSocket } from '../../socket'
-import { NEW_MESSAGE, NEW_MESSAGE_ALERT, NEW_REQUEST, REFETCH_CHATS } from './constants/event'
+import { NEW_MESSAGE, NEW_MESSAGE_ALERT, NEW_REQUEST, ONLINE_USERS, REFETCH_CHATS } from './constants/event'
 import { incrementNotification, setNewMessagesAlert } from '../../redux/reducers/chat'
 import { useEffect } from 'react'
 import { getOrSaveStorage } from '../../lib/features'
 import DeleteChatMenu from '../Dialog/DeleteChatMenu'
+import { useState } from 'react'
 
 const Applayout = () => (WrappedComponent) => {
    return (props) => {
 
       const params = useParams();
+
+      const [onlineUsers,setOnlineUsers] = useState([]);
 
       const deleteMenuAnchor = useRef(null);
 
@@ -71,6 +74,11 @@ const Applayout = () => (WrappedComponent) => {
          dispatch(incrementNotification());
       },[dispatch]);
 
+      const onlineUsersListener = useCallback((data)=> {
+         console.log("inp data is ",data);
+         setOnlineUsers(data);
+      },[]);
+
       const refetchHandler = useCallback(()=> {
          refetch();
          navigate('/');
@@ -79,7 +87,8 @@ const Applayout = () => (WrappedComponent) => {
       const eventHandlers = {
          [NEW_MESSAGE_ALERT] : newMessageAlertHandler,
          [NEW_REQUEST] : newRequestHandler,
-         [REFETCH_CHATS] : refetchHandler
+         [REFETCH_CHATS] : refetchHandler,
+         [ONLINE_USERS] : onlineUsersListener
    };
 
       useSocketEvents(socket,eventHandlers);
@@ -103,6 +112,7 @@ const Applayout = () => (WrappedComponent) => {
                         chats={data?.chats}
                         handleDeleteChat={handleDeleteChat}
                         newMessagesAlert={newMessageAlert}
+                        onlineUsers={onlineUsers}
                      />
                   </Drawer>
                )
