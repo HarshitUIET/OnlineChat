@@ -97,6 +97,8 @@ io.on("connection",(socket) => {
   const user = socket.user;
 
   userSocketIDs.set(user._id.toString(),socket.id);
+
+  console.log(userSocketIDs);
   
   socket.on(NEW_MESSAGE,async ({chatId,members,message}) => {
      const messageForRealTime = {

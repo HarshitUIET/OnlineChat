@@ -74,15 +74,14 @@ const Applayout = () => (WrappedComponent) => {
          dispatch(incrementNotification());
       },[dispatch]);
 
-      const onlineUsersListener = useCallback((data)=> {
-         console.log("inp data is ",data);
-         setOnlineUsers(data);
-      },[]);
-
       const refetchHandler = useCallback(()=> {
          refetch();
          navigate('/');
       },[refetch]);
+
+      const onlineUsersListener = useCallback((data)=> {
+         setOnlineUsers(data);
+      },[]);
 
       const eventHandlers = {
          [NEW_MESSAGE_ALERT] : newMessageAlertHandler,
@@ -130,6 +129,7 @@ const Applayout = () => (WrappedComponent) => {
                   {
                      isLoading ? <Skeleton /> :
                         <ChatList chats={data?.chats} chatId={chatId} handleDeleteChat={handleDeleteChat} newMessagesAlert={newMessageAlert}
+                        onlineUsers={onlineUsers}
                         />
                   }
                </Grid>

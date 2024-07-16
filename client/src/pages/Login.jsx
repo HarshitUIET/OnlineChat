@@ -1,24 +1,16 @@
-import React from 'react';
-import { useState } from 'react';
-import { CiCamera } from "react-icons/ci";
-import { IoMdPerson } from "react-icons/io";
-import uploadarea from '../assets/uploadarea.svg';
-import { usernameValidator } from '../utilis/validator';
-import { passwordValidator } from '../utilis/passvalidator';
-import { HiOutlineEye } from "react-icons/hi";
-import { HiOutlineEyeOff } from "react-icons/hi";
-import { Avatar, Button, Container, IconButton, Paper, TextField, Typography } from '@mui/material';
-import { Stack } from '@mui/material';
-import CameraAltIcon from '@mui/icons-material/CameraAlt';
-import { VisuallyHiddenInput } from '../components/style/stylecomponent';
 import { useFileHandler, useInputValidation, useStrongPassword } from '6pp';
-import axios from 'axios';
-import { server } from '../components/layout/constants/config';
-import { useDispatch } from 'react-redux';
-import { userExists, userNotExists } from '../redux/reducers/auth';
-import  toast  from 'react-hot-toast';
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { Avatar, Button, Container, IconButton, InputAdornment, Paper, Stack, TextField, Typography } from '@mui/material';
+import axios from 'axios';
+import React, { useState } from 'react';
+import toast from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { server } from '../components/layout/constants/config';
+import { VisuallyHiddenInput } from '../components/style/stylecomponent';
+import { userExists, userNotExists } from '../redux/reducers/auth';
+import { usernameValidator } from '../utilis/validator';
 
 const Login = () => {
 
@@ -122,6 +114,10 @@ const Login = () => {
 
     }
 
+    const handleClickShowPassword = () => {
+      setShowPassword((prev) => !prev);
+    }
+
 
     return (
         <div>
@@ -164,7 +160,7 @@ const Login = () => {
                     onChange={username.changeHandler}
                   />
   
-                 <div className=''>
+                 
                  <TextField
                     required
                     fullWidth
@@ -174,16 +170,23 @@ const Login = () => {
                     variant="outlined"
                     value={password.value}
                     onChange={password.changeHandler}
+                    InputProps={{
+                      endAdornment : (
+                        <InputAdornment position='end'>
+                          <IconButton
+                           aria-label='toggle password visibility'
+                           onClick={handleClickShowPassword}
+                           edge="end"
+                          >
+                            {
+                              showPassword ? <VisibilityIcon/> : <VisibilityOffIcon/>
+                            }
+                          </IconButton>
+                        </InputAdornment>
+                      )
+                    }}
                     
                   />
-                  <IconButton className='relative left-52 bottom-14'> 
-                    {
-                      showPassword ? <VisibilityIcon onClick={()=> setShowPassword(false)} /> : <VisibilityOffIcon onClick={()=> setShowPassword(true)} />
-                    }
-                  </IconButton>
-                 </div>
-
-
   
                   <Button
                     sx={{
@@ -306,11 +309,26 @@ const Login = () => {
                     required
                     fullWidth
                     label="Password"
-                    type="password"
+                    type={`${showPassword ? "text" : "password"}`}
                     margin="normal"
                     variant="outlined"
                     value={password.value}
                     onChange={password.changeHandler}
+                    InputProps={{
+                      endAdornment : (
+                        <InputAdornment position='end'>
+                          <IconButton
+                           aria-label='toggle password visibility'
+                           onClick={handleClickShowPassword}
+                           edge="end"
+                          >
+                            {
+                              showPassword ? <VisibilityIcon/> : <VisibilityOffIcon/>
+                            }
+                          </IconButton>
+                        </InputAdornment>
+                      )
+                    }}
                   />
   
                   <Button

@@ -10,7 +10,7 @@ import { sampleMessage } from '../components/layout/constants/sampleData';
 import MessageComponent from '../components/share/MessageComponent';
 import { useState } from 'react';
 import { getSocket } from '../socket';
-import { CHAT_JOINED,CHAT_EXITED, NEW_MESSAGE, STOP_TYPING } from '../components/layout/constants/event';
+import { CHAT_JOINED,CHAT_EXITED, NEW_MESSAGE, STOP_TYPING, ONLINE_USERS } from '../components/layout/constants/event';
 import { useChatDetailsQuery, useGetMessagesQuery } from '../redux/api/api';
 import { useErrors, useSocketEvents } from '../hooks/hook';
 import { useDispatch, useSelector } from 'react-redux';
@@ -142,6 +142,7 @@ const Chat = ({chatId}) => {
     setUserTyping(false);
   },[chatId]);
 
+
  useEffect(()=>{
 
   dispatch(clearNewMessagesAlert(chatId));
@@ -193,7 +194,7 @@ const Chat = ({chatId}) => {
     [ALERT] : alertListener,
     [NEW_MESSAGE] : newMessageHandler,
     [START_TYPING] : newMessagesListener,
-    [STOP_TYPING] : stopTypingListener
+    [STOP_TYPING] : stopTypingListener,
   };
 
   useSocketEvents(socket,eventArr)
