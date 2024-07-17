@@ -75,8 +75,8 @@ const Applayout = () => (WrappedComponent) => {
       },[dispatch]);
 
       const refetchHandler = useCallback(()=> {
-         // refetch();
-         // navigate('/');
+         refetch();
+         navigate('/');
       },[refetch]);
 
       const onlineUsersListener = useCallback((data)=> {
