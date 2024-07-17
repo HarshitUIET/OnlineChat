@@ -77,7 +77,6 @@ const getMyGroups = TryCatch(async (req,res,next) => {
     const chats = await Chat.find({
         groupChat : true,
         members : req.user,
-        creator : req.user
     }).populate('members','name avatar');
 
     const groups = chats.map(({_id,groupChat,name,members}) => {

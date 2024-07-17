@@ -1,4 +1,13 @@
-import { isValidUsername } from "6pp"
+
+const isValidUsername = (username) => {
+     if(!username) return false;
+
+     if(/\s/.test(username)) return false;
+
+    if(username.length < 3) return false;
+
+    return true;
+}
 
 export const usernameValidator = (username) => {
 
