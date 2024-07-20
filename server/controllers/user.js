@@ -1,4 +1,4 @@
-import { compare } from 'bcrypt';
+import pkg from 'bcryptjs';
 import {User} from '../models/user.js';
 import {emitEvent, sendToken, uploadFileToCloudinary} from '../utilis/features.js'
 import { TryCatch } from '../middlewares/error.js';
@@ -9,6 +9,8 @@ import { NEW_REQUEST, REFETCH_CHATS } from '../constants/event.js';
 import {Request} from '../models/request.js';
 import {getOtherMember} from '../lib/helper.js';
 
+
+const {compare} = pkg;
 
 const avatar = {
   public_id : "ssede",
