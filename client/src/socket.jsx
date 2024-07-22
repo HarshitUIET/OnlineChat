@@ -11,7 +11,7 @@ const getSocket = () => {
 
 const SocketProvider = ({ children }) => {
 
-    const socket = useMemo(()=>io('http://localhost:3000',
+    const socket = useMemo(()=>io(import.meta.env.VITE_SERVER || 'http://localhost:3000',
     {
         withCredentials: true
     }
