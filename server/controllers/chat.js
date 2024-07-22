@@ -447,7 +447,7 @@ const deleteChat = TryCatch(async (req,res,next) => {
 
 })
 
-const getMessageDetails = TryCatch(async (req,res) => {
+const getMessageDetails = TryCatch(async (req,res,next) => {
      
     const chatId = req.params.id;
 
