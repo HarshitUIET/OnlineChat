@@ -322,7 +322,7 @@ const sendAttachments = TryCatch(async (req,res,next)=>{
     const message = await Message.create(messageForDB);
 
     emitEvent(req,NEW_MESSAGE,chats.members,{
-        message : messageforRealTime,
+        message : messageForDB,
         chatId
     });
 
